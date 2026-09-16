@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" role="img" aria-labelledby="title desc">
+  <title id="title">PT monogram</title>
+  <desc id="desc">A dark rounded square with a paper PT monogram and rust accent.</desc>
+  <rect width="192" height="192" rx="42" fill="#1d1d1f"/>
+  <path d="M42 51h70c25 0 39 13 39 33s-14 33-39 33H70v25H42V51Zm28 23v20h40c9 0 14-3 14-10s-5-10-14-10H70Z" fill="#fbfbfd"/>
+  <path d="M70 117h42c25 0 39-13 39-33 0-7-2-13-5-18 4 5 7 12 7 21 0 21-15 35-41 35H70v20H42v-5h28v-20Z" fill="#bf4b3a" opacity=".9"/>
+  <circle cx="148" cy="148" r="10" fill="#bf4b3a"/>
+</svg>
