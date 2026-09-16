@@ -19,11 +19,13 @@ The production files are created in `dist/`.
 
 ## Deploy
 
-This project is a static Vite site and can be deployed to GitHub Pages or any static hosting provider.
+This project is a static Vite site and deploys to GitHub Pages at:
+
+https://aivan-bash.github.io/Beam_Resume/
 
 ```bash
 npm install
 npm run build
 ```
 
-The production files are created in `dist/`. For GitHub Pages under a repository subpath, configure Vite's `base` option before deploying.
+The production files are created in `dist/`. Pushes to `main` build and deploy automatically through GitHub Actions.
