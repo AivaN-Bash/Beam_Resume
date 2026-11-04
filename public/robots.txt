@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://aivan-bash.github.io/Beam_Resume/sitemap.xml

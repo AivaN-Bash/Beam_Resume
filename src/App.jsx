@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Link, NavLink, Route, Routes, useLocation } from "react-router-dom";
 
 const nav = [
   ["About", "/about"],
   ["Experience", "/experience"],
+  ["Projects", "/projects"],
   ["Skills", "/skills"],
   ["Contact", "/contact"],
 ];
@@ -63,19 +64,39 @@ function Layout({ children }) {
 
 function Arrow() { return <span className="arrow">↗</span>; }
 
-function BilingualTitle({ english, thai }) {
+// Shared EN/TH auto-toggle: respects prefers-reduced-motion (stays on English
+// instead of silently disabling the CSS transition but still auto-updating),
+// and pauses while the pointer or keyboard focus is on the element so the
+// content doesn't change out from under someone reading it.
+function useBilingualToggle(intervalMs = 5000) {
   const [showThai, setShowThai] = useState(false);
+  const pausedRef = useRef(false);
 
   useEffect(() => {
-    const titleTimer = window.setInterval(() => {
-      setShowThai((showThaiTitle) => !showThaiTitle);
-    }, 5000);
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return undefined;
 
-    return () => window.clearInterval(titleTimer);
-  }, []);
+    const id = window.setInterval(() => {
+      if (!pausedRef.current) setShowThai((value) => !value);
+    }, intervalMs);
+
+    return () => window.clearInterval(id);
+  }, [intervalMs]);
+
+  const pauseHandlers = {
+    onMouseEnter: () => { pausedRef.current = true; },
+    onMouseLeave: () => { pausedRef.current = false; },
+    onFocus: () => { pausedRef.current = true; },
+    onBlur: () => { pausedRef.current = false; },
+  };
+
+  return [showThai, pauseHandlers];
+}
+
+function BilingualTitle({ english, thai }) {
+  const [showThai, pauseHandlers] = useBilingualToggle();
 
   return (
-    <h1 className={`page-title-switch${showThai ? " show-thai" : ""}`} aria-live="polite">
+    <h1 className={`page-title-switch${showThai ? " show-thai" : ""}`} aria-live="polite" {...pauseHandlers}>
       <span className="page-title-option page-title-english" aria-hidden={showThai}>{english}</span>
       <span className="page-title-option page-title-thai" aria-hidden={!showThai}>{thai}</span>
     </h1>
@@ -83,21 +104,13 @@ function BilingualTitle({ english, thai }) {
 }
 
 function Home() {
-  const [showThaiName, setShowThaiName] = useState(false);
-
-  useEffect(() => {
-    const nameTimer = window.setInterval(() => {
-      setShowThaiName((showThai) => !showThai);
-    }, 5000);
-
-    return () => window.clearInterval(nameTimer);
-  }, []);
+  const [showThaiName, pauseHandlers] = useBilingualToggle();
 
   return (
     <div className="page home">
       <section className="hero">
         <div className="eyebrow">PORTFOLIO / 2026 <span className="eyebrow-divider">/</span> CUSTOMER SERVICE + TECHNICAL</div>
-        <h1 className={`hero-name${showThaiName ? " show-thai" : ""}`} aria-live="polite">
+        <h1 className={`hero-name${showThaiName ? " show-thai" : ""}`} aria-live="polite" {...pauseHandlers}>
           <span className="name-option name-option-english" aria-hidden={showThaiName}>PHAWAT<br/><em>TANAJIRANON</em></span>
           <span className="name-option name-option-thai" aria-hidden={!showThaiName}>ภวัต<br/><span>ธนาจิรานนท์</span></span>
         </h1>
@@ -132,8 +145,9 @@ function Home() {
         <div className="section-label">03 / INDEX</div>
         <div className="index-list">
           <Link to="/experience" className="index-link"><span>01</span><strong>Experience</strong><small>Work, study, and what I learned</small><Arrow/></Link>
-          <Link to="/skills" className="index-link"><span>02</span><strong>Skills</strong><small>Tools, languages, and working strengths</small><Arrow/></Link>
-          <Link to="/contact" className="index-link"><span>03</span><strong>Contact</strong><small>Roles and conversations I am open to</small><Arrow/></Link>
+          <Link to="/projects" className="index-link"><span>02</span><strong>Projects</strong><small>Things I've built on my own</small><Arrow/></Link>
+          <Link to="/skills" className="index-link"><span>03</span><strong>Skills</strong><small>Tools, languages, and working strengths</small><Arrow/></Link>
+          <Link to="/contact" className="index-link"><span>04</span><strong>Contact</strong><small>Roles and conversations I am open to</small><Arrow/></Link>
         </div>
       </section>
 
@@ -181,6 +195,48 @@ function Experience() {
   </Page>;
 }
 
+const projects = [
+  {
+    title: "Two-Player Chess Engine",
+    tag: "PERSONAL PROJECT",
+    desc: "A full two-player chess engine built in C++ with SFML graphics — legal-move generation checked against perft test suites, animated piece movement, and a board-flip option for local multiplayer.",
+    stack: ["C++", "SFML", "Perft testing"],
+  },
+  {
+    title: "TipBeam",
+    tag: "PERSONAL PROJECT",
+    desc: "A donation-alert and tipping platform for Thai streamers, with PromptPay QR generation and a live OBS browser-source overlay for on-stream alerts.",
+    stack: ["TypeScript", "PromptPay API", "OBS overlay"],
+  },
+  {
+    title: "This Portfolio",
+    tag: "PERSONAL PROJECT",
+    desc: "Designed and built this site end to end — a bilingual (EN/TH) single-page React app with route-based pages, animated typography, and a keyboard- and screen-reader-friendly navigation system.",
+    stack: ["React", "Vite", "React Router"],
+  },
+];
+
+function Projects() {
+  return <Page title={<>Things I’ve<br/><em>built.</em></>} thaiTitle={<>สิ่งที่ฉัน<br/><span>สร้างเอง</span></>} index="03">
+    <div className="timeline">
+      {projects.map((p) => (
+        <div className="timeline-item" key={p.title}>
+          <div className="time">{p.tag}</div>
+          <div>
+            <h2>{p.title}</h2>
+            <p>{p.desc}</p>
+            <div className="tag-row">{p.stack.map((s) => <span className="skill-pill" key={s}>{s}</span>)}</div>
+          </div>
+        </div>
+      ))}
+    </div>
+    <div className="callout"><span>ON GITHUB</span><strong>Full source for this site, and other personal builds, are on GitHub.</strong></div>
+    <div className="projects-cta">
+      <a className="text-link" href="https://github.com/AivaN-Bash" target="_blank" rel="noopener noreferrer">View GitHub profile <Arrow/></a>
+    </div>
+  </Page>;
+}
+
 const skillGroups = [
   ["Customer service", ["Face-to-face support", "Rental bookings", "Documentation", "Teamwork"]],
   ["Systems & tech", ["Python", "Java", "HTML / CSS", "JavaScript", "React", "SQL / MySQL", "Git / GitHub"]],
@@ -189,7 +245,7 @@ const skillGroups = [
 ];
 
 function Skills() {
-  return <Page title={<>Skills<br/><em>& toolkit.</em></>} thaiTitle={<>ทักษะ<br/><span>และเครื่องมือ</span></>} index="03">
+  return <Page title={<>Skills<br/><em>& toolkit.</em></>} thaiTitle={<>ทักษะ<br/><span>และเครื่องมือ</span></>} index="04">
     <div className="skill-list">
       {skillGroups.map(([name, skills], i) => (
         <section className="skill-row" key={name}>
@@ -204,7 +260,7 @@ function Skills() {
 }
 
 function Contact() {
-  return <Page title={<>Let’s make<br/><em>contact.</em></>} thaiTitle={<>ติดต่อ<br/><span>ฉัน</span></>} index="04">
+  return <Page title={<>Let’s make<br/><em>contact.</em></>} thaiTitle={<>ติดต่อ<br/><span>ฉัน</span></>} index="05">
     <div className="contact-grid">
       <div>
         <p className="large-copy">I’m open to customer service, hospitality, support, and technology-focused opportunities. I bring English communication, international work experience, computer skills, and a genuine willingness to learn.</p>
@@ -241,6 +297,7 @@ export default function App() {
     <Route path="/" element={<Home/>}/>
     <Route path="/about" element={<About/>}/>
     <Route path="/experience" element={<Experience/>}/>
+    <Route path="/projects" element={<Projects/>}/>
     <Route path="/skills" element={<Skills/>}/>
     <Route path="/contact" element={<Contact/>}/>
     <Route path="*" element={<Home/>}/>
