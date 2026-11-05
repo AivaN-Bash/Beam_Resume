@@ -2,7 +2,6 @@ import React from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import App from "./App";
-import "./styles.css";
 
 class AppErrorBoundary extends React.Component {
   state = { error: null };
@@ -14,9 +13,10 @@ class AppErrorBoundary extends React.Component {
   render() {
     if (this.state.error) {
       return (
-        <main style={{ padding: "10vw", fontFamily: "Arial, sans-serif" }}>
-          <p>Something went wrong while loading this page.</p>
-          <pre style={{ whiteSpace: "pre-wrap" }}>{this.state.error.message}</pre>
+        <main className="error-page" role="alert">
+          <h1>Something went wrong.</h1>
+          <p>Please refresh the page. If the problem continues, try again later.</p>
+          <button type="button" onClick={() => window.location.reload()}>Refresh page</button>
         </main>
       );
     }
@@ -25,7 +25,13 @@ class AppErrorBoundary extends React.Component {
   }
 }
 
-createRoot(document.getElementById("root")).render(
+const rootElement = document.getElementById("root");
+
+if (!rootElement) {
+  throw new Error("Required application root element #root was not found.");
+}
+
+createRoot(rootElement).render(
   <React.StrictMode>
     <AppErrorBoundary>
       <BrowserRouter basename={import.meta.env.BASE_URL}>
