@@ -12,6 +12,6 @@ export default function Skills() {
         </section>
       ))}
     </div>
-    <div className="skills-note"><strong>How I work</strong><p>I’m comfortable learning new tools when the job requires them. My strongest advantage is combining customer awareness, a technical foundation, and the adaptability to contribute in a new environment.</p></div>
+    <div className="skills-note"><strong>How I work</strong><p>At Dollywood, I handled bookings and kept rental records. My Computer Science coursework helps me understand the systems behind that work.</p></div>
   </Page>;
 }

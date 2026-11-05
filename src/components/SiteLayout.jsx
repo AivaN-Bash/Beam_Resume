@@ -52,7 +52,9 @@ export default function SiteLayout({ children }) {
       <a className="skip-link" href="#main-content">Skip to content</a>
       <header className="nav">
         <Link className="brand" to="/">
-          <span className="brand-mark" aria-hidden="true"><span>PT</span></span>
+          <span className="brand-mark" aria-hidden="true">
+            <img src={`${import.meta.env.BASE_URL}pt-mark.svg`} alt="" width="36" height="36" />
+          </span>
           <strong>PHAWAT<br/>TANAJIRANON</strong>
         </Link>
         <nav className="desktop-nav" aria-label="Main navigation">

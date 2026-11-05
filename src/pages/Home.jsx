@@ -1,24 +1,57 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import Arrow from "../components/Arrow";
 import useBilingualToggle from "../components/useBilingualToggle";
 
 export default function Home() {
   const [showThaiName, pauseHandlers] = useBilingualToggle();
+  const [portraitFailed, setPortraitFailed] = useState(false);
+  const portraitSrc = `${import.meta.env.BASE_URL}images/phawat-cutout.png`;
 
   return (
     <div className="page home">
       <section className="hero">
-        <div className="eyebrow">PORTFOLIO / {new Date().getFullYear()} <span className="eyebrow-divider">/</span> CUSTOMER SERVICE + TECHNICAL</div>
-        <h1 className={`hero-name${showThaiName ? " show-thai" : ""}`} {...pauseHandlers}>
-          <span className="name-option name-option-english" aria-hidden={showThaiName}>PHAWAT<br/><em>TANAJIRANON</em></span>
-          <span className="name-option name-option-thai" aria-hidden={!showThaiName}>ภวัต<br/><span>ธนาจิรานนท์</span></span>
-        </h1>
-        <div className="hero-bottom">
-          <p className="hero-lead">Customer service experience.<br/>A Computer Science foundation.<br/>Ready to learn and contribute.</p>
-          <div className="hero-note">
-            <span>01</span>
-            <p>Customer service experience, Computer Science study, and TOEIC 810. I bring calm communication, practical problem solving, and an adaptable approach to every new team.</p>
+        <div className="hero-topline">
+          <div className="eyebrow">PORTFOLIO / {new Date().getFullYear()}</div>
+          <span className="hero-status"><i aria-hidden="true" /> AVAILABLE FOR WORK</span>
+        </div>
+
+        <div className="hero-layout">
+          <div className="hero-copy">
+            <p className="hero-greeting">CUSTOMER SERVICE / COMPUTER SCIENCE</p>
+            <h1 className={`hero-name${showThaiName ? " show-thai" : ""}`} {...pauseHandlers}>
+              <span className="name-option name-option-english" aria-hidden={showThaiName}>PHAWAT<br/><em>TANAJIRANON</em></span>
+              <span className="name-option name-option-thai" aria-hidden={!showThaiName}>ภวัต<br/><span>ธนาจิรานนท์</span></span>
+            </h1>
+            <div className="hero-intro">
+              <p className="hero-lead">Customer service experience.<br/>A Computer Science foundation.</p>
+              <div className="hero-note">
+                <span>01</span>
+                <p>TOEIC 810 · U.S. work experience · English and Thai.</p>
+              </div>
+            </div>
+            <div className="hero-actions">
+              <Link className="button" to="/contact">Let’s talk <Arrow /></Link>
+              <Link className="text-link" to="/projects">Explore my work <Arrow /></Link>
+            </div>
           </div>
+
+          <figure className={`hero-portrait${portraitFailed ? " portrait-unavailable" : ""}`}>
+            {!portraitFailed && (
+              <img
+                src={portraitSrc}
+                alt="Phawat in graduation attire"
+                width="512"
+                height="512"
+                loading="eager"
+                fetchPriority="high"
+                decoding="async"
+                onError={() => setPortraitFailed(true)}
+              />
+            )}
+            {portraitFailed && <div className="portrait-placeholder" aria-hidden="true">PT</div>}
+            <figcaption><span>PORTRAIT</span><span>THAILAND</span></figcaption>
+          </figure>
         </div>
       </section>
 
@@ -26,7 +59,7 @@ export default function Home() {
         <div className="section-label">01 / PROFILE</div>
         <div>
           <h2>Customer service experience with a <em>technical mindset.</em></h2>
-          <p className="large-copy">I combine face-to-face service experience with a Computer Science foundation. I learn systems quickly, communicate clearly in English, and stay dependable when work gets busy. My international experience taught me how to adapt to new teams, customers, and routines.</p>
+          <p className="large-copy">I have worked with customers in the United States and Thailand, and studied Computer Science at ABAC. I am comfortable explaining a process, keeping track of details, and learning the software behind the work.</p>
           <Link className="text-link" to="/about">Read my story <Arrow/></Link>
         </div>
       </section>
@@ -43,16 +76,16 @@ export default function Home() {
       <section className="index-section section">
         <div className="section-label">03 / INDEX</div>
         <div className="index-list">
-          <Link to="/experience" className="index-link"><span>01</span><strong>Experience</strong><small>Work, study, and what I learned</small><Arrow/></Link>
-          <Link to="/projects" className="index-link"><span>02</span><strong>Projects</strong><small>Things I've built on my own</small><Arrow/></Link>
-          <Link to="/skills" className="index-link"><span>03</span><strong>Skills</strong><small>Tools, languages, and working strengths</small><Arrow/></Link>
-          <Link to="/contact" className="index-link"><span>04</span><strong>Contact</strong><small>Roles and conversations I am open to</small><Arrow/></Link>
+          <Link to="/experience" className="index-link"><span>01</span><strong>Experience</strong><small>Dollywood, hospitality, and university</small><Arrow/></Link>
+          <Link to="/projects" className="index-link"><span>02</span><strong>Projects</strong><small>Chess, streaming tools, and this site</small><Arrow/></Link>
+          <Link to="/skills" className="index-link"><span>03</span><strong>Skills</strong><small>Software, office tools, and languages</small><Arrow/></Link>
+          <Link to="/contact" className="index-link"><span>04</span><strong>Contact</strong><small>Customer service, support, or junior tech</small><Arrow/></Link>
         </div>
       </section>
 
       <section className="closing section">
-        <p>OPEN TO THE NEXT GOOD FIT</p>
-        <h2>LET’S TALK ABOUT<br/><em>THE WORK.</em></h2>
+        <p>CURRENTLY LOOKING FOR</p>
+        <h2>CUSTOMER SERVICE,<br/><em>SUPPORT OR JUNIOR TECH.</em></h2>
         <Link className="button" to="/contact">Get in touch <Arrow/></Link>
       </section>
     </div>

@@ -10,19 +10,19 @@ export const projects = [
   {
     title: "Two-Player Chess Engine",
     tag: "PERSONAL PROJECT",
-    desc: "A full two-player chess engine built in C++ with SFML graphics — legal-move generation checked against perft test suites, animated piece movement, and a board-flip option for local multiplayer.",
+    desc: "A two-player chess engine in C++ and SFML. It generates legal moves, uses perft checks, animates pieces, and can flip the board for local play.",
     stack: ["C++", "SFML", "Perft testing"],
   },
   {
     title: "TipBeam",
     tag: "PERSONAL PROJECT",
-    desc: "A donation-alert and tipping platform for Thai streamers, with PromptPay QR generation and a live OBS browser-source overlay for on-stream alerts.",
+    desc: "A tipping page for Thai streamers that creates PromptPay QR codes and sends donation alerts to a browser overlay in OBS.",
     stack: ["TypeScript", "PromptPay API", "OBS overlay"],
   },
   {
     title: "This Portfolio",
     tag: "PERSONAL PROJECT",
-    desc: "Designed and built this site end to end — a bilingual (EN/TH) single-page React app with route-based pages, animated typography, and a keyboard- and screen-reader-friendly navigation system.",
+    desc: "The site you are viewing: a React portfolio built with Vite, with separate pages for my experience, projects, skills, and contact details.",
     stack: ["React", "Vite", "React Router"],
   },
 ];

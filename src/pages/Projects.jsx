@@ -16,7 +16,7 @@ export default function Projects() {
         </div>
       ))}
     </div>
-    <div className="callout"><span>ON GITHUB</span><strong>Full source for this site, and other personal builds, are on GitHub.</strong></div>
+    <div className="callout"><span>ON GITHUB</span><strong>I put the source code for this site and my other projects on GitHub.</strong></div>
     <div className="projects-cta">
       <a className="text-link" href="https://github.com/AivaN-Bash" target="_blank" rel="noopener noreferrer">View GitHub profile <Arrow/></a>
     </div>
