@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import Arrow from "../components/Arrow";
 import AsciiPortrait from "../components/AsciiPortrait";
+import HarbourSkylineScene from "../components/HarbourSkylineScene";
 import ViaductTrainScene from "../components/ViaductTrainScene";
 import useBilingualToggle from "../components/useBilingualToggle";
 
@@ -51,6 +52,7 @@ export default function Home() {
           </div>
 
           <figure className={`hero-portrait${portraitFailed ? " portrait-unavailable" : ""}`}>
+            <HarbourSkylineScene />
             {!portraitFailed && (
               <img
                 src={portraitSrc}

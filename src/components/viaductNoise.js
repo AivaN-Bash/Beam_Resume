@@ -3,6 +3,14 @@ export const KEYS = Array.from({ length: 64 }, (_, index) => String.fromCharCode
 export const clamp = (value, minimum = 0, maximum = 1) => Math.max(minimum, Math.min(maximum, value));
 export const lerp = (from, to, amount) => from + (to - from) * amount;
 
+export function rng(seed = 0) {
+  let state = seed >>> 0;
+  return () => {
+    state = (Math.imul(state, 1664525) + 1013904223) >>> 0;
+    return state / 4294967296;
+  };
+}
+
 function randomAt(x, y, seed) {
   const value = Math.sin(x * 127.1 + y * 311.7 + seed * 74.7) * 43758.5453123;
   return value - Math.floor(value);

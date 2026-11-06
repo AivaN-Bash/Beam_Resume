@@ -1,4 +1,5 @@
 import Page from "../components/Page";
+import DnsResolverScene from "../components/DnsResolverScene";
 import { skillGroups } from "../data/portfolio";
 
 export default function Skills() {
@@ -12,6 +13,10 @@ export default function Skills() {
         </section>
       ))}
     </div>
+    <figure className="dns-resolver-figure">
+      <DnsResolverScene />
+      <figcaption><span>DNS QUERY / TRACE</span><span>CLIENT · AUTHORITATIVE</span></figcaption>
+    </figure>
     <div className="skills-note"><strong>How I work</strong><p>At Dollywood, I handled bookings and kept rental records. My Computer Science coursework helps me understand the systems behind that work.</p></div>
   </Page>;
 }

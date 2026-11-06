@@ -1,4 +1,5 @@
 import Arrow from "../components/Arrow";
+import ContactChatScene from "../components/ContactChatScene";
 import Page from "../components/Page";
 
 export default function Contact() {
@@ -20,6 +21,12 @@ export default function Contact() {
         <p>Customer service, hospitality, support, or junior tech roles</p>
       </div>
     </div>
-    <div className="placeholder-note">Have a role in mind? Send me a message. I am happy to tell you more about my experience.</div>
+    <div className="contact-invitation">
+      <p className="placeholder-note">Have a role in mind? Send me a message. I am happy to tell you more about my experience.</p>
+      <figure className="contact-chat-figure" aria-label="An animated example conversation about work opportunities">
+        <ContactChatScene />
+        <figcaption><span>A QUICK INTRO</span><span>OPEN TO A CONVERSATION</span></figcaption>
+      </figure>
+    </div>
   </Page>;
 }

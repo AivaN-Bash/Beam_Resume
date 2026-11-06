@@ -1,0 +1,105 @@
+import { useEffect, useRef } from "react";
+import createGoldenGateFog, { GOLDEN_GATE_PALETTE } from "./goldenGateFog";
+
+const WIDTH = 100;
+const HEIGHT = 36;
+const CELL_WIDTH = 10;
+const CELL_HEIGHT = 14;
+const FRAME_INTERVAL = 1000 / 12;
+
+/** Renders the animated bridge and fog scene in the existing timeline column. */
+export default function GoldenGateScene() {
+  const canvasRef = useRef(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return undefined;
+
+    canvas.width = WIDTH * CELL_WIDTH;
+    canvas.height = HEIGHT * CELL_HEIGHT;
+    const context = canvas.getContext("2d");
+    if (!context) return undefined;
+
+    const drawScene = createGoldenGateFog();
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    context.font = '14px "DM Mono", monospace';
+    context.textAlign = "center";
+    context.textBaseline = "middle";
+
+    let rafId = 0;
+    let lastDraw = 0;
+    let startTime = null;
+    let elapsed = 0;
+    let isVisible = typeof IntersectionObserver === "undefined";
+    let isMounted = true;
+
+    function draw(time) {
+      const frame = drawScene(time);
+      context.clearRect(0, 0, canvas.width, canvas.height);
+      frame.forEach(([character, colorIndex], index) => {
+        if (character === " ") return;
+        const x = index % WIDTH;
+        const y = Math.floor(index / WIDTH);
+        context.fillStyle = GOLDEN_GATE_PALETTE[colorIndex] || "#d9e2e7";
+        context.fillText(character, x * CELL_WIDTH + CELL_WIDTH / 2, y * CELL_HEIGHT + CELL_HEIGHT / 2);
+      });
+    }
+
+    function stop() {
+      window.cancelAnimationFrame(rafId);
+      rafId = 0;
+      if (startTime !== null) {
+        elapsed += (performance.now() - startTime) / 1000;
+        startTime = null;
+      }
+    }
+
+    function animate(timestamp) {
+      if (!isMounted || !isVisible || reducedMotion.matches) {
+        rafId = 0;
+        return;
+      }
+      if (startTime === null) startTime = timestamp;
+      if (timestamp - lastDraw >= FRAME_INTERVAL) {
+        lastDraw = timestamp;
+        draw(elapsed + (timestamp - startTime) / 1000);
+      }
+      rafId = window.requestAnimationFrame(animate);
+    }
+
+    function start() {
+      if (isMounted && isVisible && !reducedMotion.matches && !rafId) rafId = window.requestAnimationFrame(animate);
+    }
+
+    draw(0);
+    const observer = typeof IntersectionObserver === "undefined"
+      ? null
+      : new IntersectionObserver(([entry]) => {
+          isVisible = entry.isIntersecting;
+          if (isVisible) start();
+          else stop();
+        }, { threshold: 0.08 });
+    observer?.observe(canvas);
+    if (isVisible) start();
+
+    function handleMotionChange() {
+      if (reducedMotion.matches) {
+        stop();
+        elapsed = 0;
+        draw(0);
+      } else {
+        start();
+      }
+    }
+    reducedMotion.addEventListener("change", handleMotionChange);
+
+    return () => {
+      isMounted = false;
+      stop();
+      observer?.disconnect();
+      reducedMotion.removeEventListener("change", handleMotionChange);
+    };
+  }, []);
+
+  return <canvas ref={canvasRef} className="golden-gate-canvas" aria-hidden="true" />;
+}
