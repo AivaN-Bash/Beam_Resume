@@ -76,7 +76,7 @@ export default function SiteLayout({ children }) {
           <span />
           <span />
         </button>
-        <Link className="nav-cta" to="/contact">Let’s talk <Arrow /></Link>
+        <Link className="nav-cta" to="/contact"><span>Let’s talk</span><Arrow /></Link>
         <nav id="mobile-navigation" className={`mobile-nav${menuOpen ? " is-open" : ""}`} aria-label="Mobile navigation" aria-hidden={!menuOpen}>
           {nav.map(([label, path], index) => (
             <NavLink key={path} to={path} end className={({ isActive }) => isActive ? "active" : ""} tabIndex={menuOpen ? 0 : -1}>
