@@ -138,6 +138,12 @@ h2 em { font-family: var(--font-editorial); font-style: italic; font-weight: 500
 .hero-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2) var(--space-3); margin-top: clamp(var(--space-3), 2.5vw, var(--space-4)); }
 .hero-actions .text-link { margin-top: 0; }
 
+.home-marquee { margin: 0 -5vw; overflow: hidden; padding: 17px 0; border-bottom: 1px solid var(--line); background: var(--mist); -webkit-mask-image: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent); mask-image: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent); }
+.marquee-track { display: flex; width: max-content; transform: translate3d(0, 0, 0); animation: marquee-scroll 34s linear infinite; will-change: transform; }
+.marquee-group { display: flex; flex: 0 0 auto; min-width: 100vw; align-items: center; justify-content: space-around; gap: clamp(24px, 3vw, 42px); padding: 0 clamp(18px, 4vw, 56px); }
+.marquee-item { display: inline-flex; align-items: center; gap: 11px; color: var(--muted); font: 11px/1.4 'DM Mono', monospace; letter-spacing: .08em; text-transform: uppercase; white-space: nowrap; }
+.marquee-mark { width: 5px; height: 5px; flex: 0 0 5px; border-radius: 50%; background: var(--caramel); box-shadow: 0 0 9px color-mix(in srgb, var(--caramel) 35%, transparent); }
+
 @media (min-width: 801px) and (max-width: 1100px) {
   .hero-layout { grid-template-columns: minmax(0, 1.15fr) minmax(0, .85fr); }
   .hero h1 { font-size: clamp(3.4rem, 7.2vw, 5.2rem); }
@@ -309,6 +315,10 @@ blockquote, .quote { max-width: 800px; margin: 0 0 0 21%; padding: var(--space-6
 }
 
 @media (max-width: 520px) {
+  .home-marquee { padding: 15px 0; }
+  .marquee-track { animation-duration: 34s; }
+  .marquee-group { gap: 22px; padding: 0 16px; }
+  .marquee-item { gap: 9px; font-size: 10px; letter-spacing: .06em; }
   .hero-status { display: none; }
   .hero { gap: 12px; padding-top: 32px; padding-bottom: 18px; }
   .hero-topline .eyebrow { line-height: 1.5; }
@@ -327,6 +337,9 @@ blockquote, .quote { max-width: 800px; margin: 0 0 0 21%; padding: var(--space-6
 
 @media (prefers-reduced-motion: reduce) {
   * { scroll-behavior: auto !important; transition: none !important; animation: none !important; }
+  .marquee-track { width: 100%; transform: none; }
+  .marquee-group { flex: 1 1 auto; min-width: 0; flex-wrap: wrap; justify-content: flex-start; padding: 0; }
+  .marquee-group + .marquee-group { display: none; }
   .name-option-thai span::after { transform: scaleX(0); }
   .hero-name.show-thai .name-option-english em::after { transform: scaleX(0); }
   .hero-name.show-thai .name-option-thai span::after { transform: scaleX(1); }
@@ -347,6 +360,7 @@ blockquote, .quote { max-width: 800px; margin: 0 0 0 21%; padding: var(--space-6
 @keyframes name-in { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes underline-draw { from { transform: scaleX(0); } to { transform: scaleX(1); } }
 @keyframes nav-frame-orbit { to { stroke-dashoffset: -100; } }
+@keyframes marquee-scroll { to { transform: translate3d(-50%, 0, 0); } }
 html, body { overflow-x: hidden; }
 
 .index-link:active strong, .mobile-nav a:active { color: var(--accent); }

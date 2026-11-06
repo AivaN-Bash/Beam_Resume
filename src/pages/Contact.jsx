@@ -8,7 +8,7 @@ export default function Contact() {
         <p className="large-copy">I am looking for work in customer service, hospitality, support, or junior tech. I have U.S. work experience, a TOEIC score of 810, and three years of Computer Science study at ABAC.</p>
         <div className="contact-actions">
           <a className="button" href="mailto:beamstary@gmail.com">Email me <Arrow/></a>
-          <a className="text-link" href="tel:0864736645">086 473 6645 <Arrow/></a>
+          <a className="text-link" href="tel:+66864736645">086 473 6645 <Arrow/></a>
         </div>
       </div>
       <div className="contact-details">

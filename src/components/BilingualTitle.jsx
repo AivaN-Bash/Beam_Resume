@@ -6,7 +6,7 @@ export default function BilingualTitle({ english, thai }) {
   return (
     <h1 className={`page-title-switch${showThai ? " show-thai" : ""}`} {...pauseHandlers}>
       <span className="page-title-option page-title-english" aria-hidden={showThai}>{english}</span>
-      <span className="page-title-option page-title-thai" aria-hidden={!showThai}>{thai}</span>
+      <span className="page-title-option page-title-thai" lang="th" aria-hidden={!showThai}>{thai}</span>
     </h1>
   );
 }

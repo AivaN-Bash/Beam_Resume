@@ -3,6 +3,17 @@ import { Link } from "react-router-dom";
 import Arrow from "../components/Arrow";
 import useBilingualToggle from "../components/useBilingualToggle";
 
+const marqueeItems = [
+  "Customer service",
+  "Computer Science",
+  "U.S. work experience",
+  "TOEIC 810",
+  "English + Thai",
+  "Ready to learn",
+  "Guest support",
+  "Problem solving",
+];
+
 export default function Home() {
   const [showThaiName, pauseHandlers] = useBilingualToggle();
   const [portraitFailed, setPortraitFailed] = useState(false);
@@ -21,7 +32,7 @@ export default function Home() {
             <p className="hero-greeting">CUSTOMER SERVICE / COMPUTER SCIENCE</p>
             <h1 className={`hero-name${showThaiName ? " show-thai" : ""}`} {...pauseHandlers}>
               <span className="name-option name-option-english" aria-hidden={showThaiName}>PHAWAT<br/><em>TANAJIRANON</em></span>
-              <span className="name-option name-option-thai" aria-hidden={!showThaiName}>ภวัต<br/><span>ธนาจิรานนท์</span></span>
+              <span className="name-option name-option-thai" lang="th" aria-hidden={!showThaiName}>ภวัต<br/><span>ธนาจิรานนท์</span></span>
             </h1>
             <div className="hero-intro">
               <p className="hero-lead">Customer service experience.<br/>A Computer Science foundation.</p>
@@ -54,6 +65,21 @@ export default function Home() {
           </figure>
         </div>
       </section>
+
+      <div className="home-marquee" aria-hidden="true">
+        <div className="marquee-track">
+          {[0, 1].map((group) => (
+            <div className="marquee-group" key={group}>
+              {marqueeItems.map((item) => (
+                <span className="marquee-item" key={item}>
+                  <i className="marquee-mark" />
+                  {item}
+                </span>
+              ))}
+            </div>
+          ))}
+        </div>
+      </div>
 
       <section className="statement section">
         <div className="section-label">01 / PROFILE</div>
