@@ -26,6 +26,19 @@ class AppErrorBoundary extends React.Component {
 }
 
 const rootElement = document.getElementById("root");
+const routerBasename = import.meta.env.BASE_URL.replace(/\/$/, "") || "/";
+const routeHome = routerBasename === "/" ? "/" : `${routerBasename}/`;
+const initialPath = window.location.pathname;
+
+// GitHub Pages redirects directory routes to a trailing slash; normalize it
+// before BrowserRouter matches the route so direct visits and refreshes work.
+if (initialPath !== routeHome && initialPath.endsWith("/")) {
+  window.history.replaceState(
+    window.history.state,
+    "",
+    `${initialPath.slice(0, -1)}${window.location.search}${window.location.hash}`,
+  );
+}
 
 if (!rootElement) {
   throw new Error("Required application root element #root was not found.");
@@ -34,7 +47,7 @@ if (!rootElement) {
 createRoot(rootElement).render(
   <React.StrictMode>
     <AppErrorBoundary>
-      <BrowserRouter basename={import.meta.env.BASE_URL}>
+      <BrowserRouter basename={routerBasename}>
         <App />
       </BrowserRouter>
     </AppErrorBoundary>
