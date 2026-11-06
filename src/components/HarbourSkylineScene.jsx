@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import createHarbourSkyline, { HARBOUR_PALETTE } from "./harbourNeonSkyline";
-import { setupCanvasSurface } from "./canvasSurface";
+import { createAsciiFramePainter, setupCanvasSurface } from "./canvasSurface";
 import { subscribeToCanvasPause } from "./canvasPause";
 
 const WIDTH = 192;
@@ -19,14 +19,15 @@ export default function HarbourSkylineScene() {
     const context = canvas?.getContext("2d");
     if (!canvas || !context) return undefined;
 
-    const clearCanvas = setupCanvasSurface(canvas, context, WIDTH * CELL_WIDTH, HEIGHT * CELL_HEIGHT);
+    setupCanvasSurface(canvas, context, WIDTH * CELL_WIDTH, HEIGHT * CELL_HEIGHT);
     context.font = `${CELL_HEIGHT}px "DM Mono", monospace`;
     context.textAlign = "center";
     context.textBaseline = "middle";
 
-    const renderFrame = createHarbourSkyline();
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
     const desktopLayout = window.matchMedia("(min-width: 801px)");
+    let renderFrame = null;
+    let paintFrame = null;
     let frameId = 0;
     let lastFrame = 0;
     let elapsed = 0;
@@ -36,25 +37,24 @@ export default function HarbourSkylineScene() {
     let pagePaused = false;
 
     function draw(seconds) {
-      const frame = renderFrame(seconds);
-      const textRows = frame.text.split("\n");
-      const colorRows = frame.color.split("\n");
-      clearCanvas();
+      if (!renderFrame || !paintFrame) return;
+      paintFrame(renderFrame(seconds));
+    }
 
-      for (let y = 0; y < HEIGHT; y += 1) {
-        const characters = textRows[y] || "";
-        const colors = colorRows[y] || "";
-        for (let x = 0; x < WIDTH; x += 1) {
-          const character = characters.charAt(x);
-          if (!character || character === " ") continue;
-          const key = colors.charAt(x);
-          const displayCharacter = desktopLayout.matches
-            ? DESKTOP_SHADES["▁▂▃▄▅▆▇█".indexOf(character)] || "·"
-            : character;
-          context.fillStyle = HARBOUR_PALETTE[key] || "#d9e2e7";
-          context.fillText(displayCharacter, x * CELL_WIDTH + CELL_WIDTH / 2, y * CELL_HEIGHT + CELL_HEIGHT / 2);
-        }
-      }
+    function initialize() {
+      if (renderFrame) return;
+      renderFrame = createHarbourSkyline();
+      paintFrame = createAsciiFramePainter(context, {
+        columns: WIDTH,
+        rows: HEIGHT,
+        cellWidth: CELL_WIDTH,
+        cellHeight: CELL_HEIGHT,
+        colorFor: (key) => HARBOUR_PALETTE[key] || "#d9e2e7",
+        characterFor: (character) => desktopLayout.matches
+          ? DESKTOP_SHADES["▁▂▃▄▅▆▇█".indexOf(character)] || "·"
+          : character,
+      });
+      draw(0);
     }
 
     function stop() {
@@ -80,7 +80,7 @@ export default function HarbourSkylineScene() {
     }
 
     function start() {
-      if (mounted && visible && !pagePaused && !reducedMotion.matches && !frameId) {
+      if (mounted && visible && renderFrame && !pagePaused && !reducedMotion.matches && !frameId) {
         frameId = window.requestAnimationFrame(animate);
       }
     }
@@ -91,22 +91,21 @@ export default function HarbourSkylineScene() {
       else start();
     });
 
-    draw(0);
     const observer = typeof IntersectionObserver === "undefined"
       ? null
       : new IntersectionObserver(([entry]) => {
           visible = entry.isIntersecting;
-          if (visible) start();
+          if (visible) { initialize(); start(); }
           else stop();
         }, { threshold: 0.05 });
     observer?.observe(canvas);
-    if (visible) start();
+    if (visible) { initialize(); start(); }
 
     function handleMotionChange() {
       if (reducedMotion.matches) {
         stop();
         elapsed = 0;
-        draw(0);
+        if (visible) { initialize(); draw(0); }
       } else {
         start();
       }
@@ -117,6 +116,7 @@ export default function HarbourSkylineScene() {
       mounted = false;
       unsubscribeFromCanvasPause();
       stop();
+      paintFrame?.dispose();
       observer?.disconnect();
       reducedMotion.removeEventListener("change", handleMotionChange);
     };

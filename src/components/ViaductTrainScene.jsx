@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import createTrainFrame, { TRAIN_PALETTE } from "./viaductSteamTrain";
-import { setupCanvasSurface } from "./canvasSurface";
+import { createAsciiFramePainter, setupCanvasSurface } from "./canvasSurface";
 import { subscribeToCanvasPause } from "./canvasPause";
 
 const WIDTH = 192;
@@ -20,9 +20,10 @@ export default function ViaductTrainScene() {
     const context = canvas.getContext("2d");
     if (!context) return undefined;
 
-    const clearCanvas = setupCanvasSurface(canvas, context, WIDTH * CELL_SIZE, HEIGHT * CELL_SIZE);
-    const drawFrame = createTrainFrame();
+    setupCanvasSurface(canvas, context, WIDTH * CELL_SIZE, HEIGHT * CELL_SIZE);
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    let drawFrame = null;
+    let paintFrame = null;
     context.font = '10px "DM Mono", monospace';
     context.textBaseline = "bottom";
     context.textAlign = "left";
@@ -36,21 +37,23 @@ export default function ViaductTrainScene() {
     let pagePaused = false;
 
     function draw(seconds) {
-      const { text, color } = drawFrame(seconds);
-      const textRows = text.split("\n");
-      const colorRows = color.split("\n");
-      clearCanvas();
+      if (!drawFrame || !paintFrame) return;
+      paintFrame(drawFrame(seconds));
+    }
 
-      textRows.forEach((row, y) => {
-        const glyphs = [...row];
-        const colorKeys = [...(colorRows[y] || "")];
-        glyphs.forEach((glyph, x) => {
-          if (glyph === " ") return;
-          const colorIndex = colorKeys[x]?.charCodeAt(0) - KEY_OFFSET;
-          context.fillStyle = TRAIN_PALETTE[colorIndex] || "#d9e2e7";
-          context.fillText(glyph, x * CELL_SIZE, (y + 1) * CELL_SIZE);
-        });
+    function initialize() {
+      if (drawFrame) return;
+      drawFrame = createTrainFrame();
+      paintFrame = createAsciiFramePainter(context, {
+        columns: WIDTH,
+        rows: HEIGHT,
+        cellWidth: CELL_SIZE,
+        cellHeight: CELL_SIZE,
+        colorFor: (key) => TRAIN_PALETTE[key.charCodeAt(0) - KEY_OFFSET] || "#d9e2e7",
+        textAlign: "left",
+        textBaseline: "bottom",
       });
+      draw(0);
     }
 
     function stopAnimation() {
@@ -76,7 +79,7 @@ export default function ViaductTrainScene() {
     }
 
     function startAnimation() {
-      if (isMounted && isVisible && !pagePaused && !reducedMotion.matches && !rafId) {
+      if (isMounted && isVisible && drawFrame && !pagePaused && !reducedMotion.matches && !rafId) {
         rafId = window.requestAnimationFrame(animate);
       }
     }
@@ -87,23 +90,22 @@ export default function ViaductTrainScene() {
       else startAnimation();
     });
 
-    draw(0);
     const observer = typeof IntersectionObserver === "undefined"
       ? null
       : new IntersectionObserver(([entry]) => {
           isVisible = entry.isIntersecting;
-          if (isVisible) startAnimation();
+          if (isVisible) { initialize(); startAnimation(); }
           else stopAnimation();
         }, { threshold: 0.08 });
 
     observer?.observe(canvas);
-    if (isVisible) startAnimation();
+    if (isVisible) { initialize(); startAnimation(); }
 
     function handleMotionChange() {
       if (reducedMotion.matches) {
         stopAnimation();
         elapsed = 0;
-        draw(0);
+        if (isVisible) { initialize(); draw(0); }
       } else {
         startAnimation();
       }
@@ -114,6 +116,7 @@ export default function ViaductTrainScene() {
       isMounted = false;
       unsubscribeFromCanvasPause();
       stopAnimation();
+      paintFrame?.dispose();
       observer?.disconnect();
       reducedMotion.removeEventListener("change", handleMotionChange);
     };

@@ -18,7 +18,7 @@ A responsive, multi-page portfolio for Phawat Tanajiranon, presenting customer s
 - Canvas-rendered ASCII illustrations
 - CSS responsive layouts and motion preferences
 
-The layouts adapt across desktop, tablet, and phone widths. Animated scenes pause while off-screen, during page scrolling, when the tab is hidden, and when reduced motion is requested. Route fallback output supports direct links and refreshes on GitHub Pages.
+The layouts adapt across desktop, tablet, and phone widths. Animated scenes initialize when they approach the viewport, repaint only changed ASCII cells in short batches, and pause while off-screen, during page scrolling, when the tab is hidden, or when reduced motion is requested. This keeps decorative canvas work from blocking the main page content during startup.
 
 ## Run locally
 

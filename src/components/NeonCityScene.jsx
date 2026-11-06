@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import createNeonCityRain, { NEON_CITY_PALETTE } from "./neonCityRain";
-import { setupCanvasSurface } from "./canvasSurface";
+import { createAsciiFramePainter, setupCanvasSurface } from "./canvasSurface";
 import { subscribeToCanvasPause } from "./canvasPause";
 
 const WIDTH = 100;
@@ -20,13 +20,14 @@ export default function NeonCityScene() {
     const context = canvas.getContext("2d");
     if (!context) return undefined;
 
-    const clearCanvas = setupCanvasSurface(canvas, context, WIDTH * CELL_WIDTH, HEIGHT * CELL_HEIGHT);
-    const drawScene = createNeonCityRain();
+    setupCanvasSurface(canvas, context, WIDTH * CELL_WIDTH, HEIGHT * CELL_HEIGHT);
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
     context.font = '14px "DM Mono", monospace';
     context.textAlign = "center";
     context.textBaseline = "middle";
 
+    let drawScene = null;
+    let paintFrame = null;
     let rafId = 0;
     let lastDraw = 0;
     let startTime = null;
@@ -36,15 +37,21 @@ export default function NeonCityScene() {
     let pagePaused = false;
 
     function draw(time) {
-      const frame = drawScene(time);
-      clearCanvas();
-      frame.forEach(([character, colorIndex], index) => {
-        if (character === " ") return;
-        const x = index % WIDTH;
-        const y = Math.floor(index / WIDTH);
-        context.fillStyle = NEON_CITY_PALETTE[colorIndex] || "#d9e2e7";
-        context.fillText(character, x * CELL_WIDTH + CELL_WIDTH / 2, y * CELL_HEIGHT + CELL_HEIGHT / 2);
+      if (!drawScene || !paintFrame) return;
+      paintFrame(drawScene(time));
+    }
+
+    function initialize() {
+      if (drawScene) return;
+      drawScene = createNeonCityRain();
+      paintFrame = createAsciiFramePainter(context, {
+        columns: WIDTH,
+        rows: HEIGHT,
+        cellWidth: CELL_WIDTH,
+        cellHeight: CELL_HEIGHT,
+        colorFor: (colorIndex) => NEON_CITY_PALETTE[colorIndex] || "#d9e2e7",
       });
+      draw(0);
     }
 
     function stop() {
@@ -70,7 +77,7 @@ export default function NeonCityScene() {
     }
 
     function start() {
-      if (isMounted && isVisible && !pagePaused && !reducedMotion.matches && !rafId) rafId = window.requestAnimationFrame(animate);
+      if (isMounted && isVisible && drawScene && !pagePaused && !reducedMotion.matches && !rafId) rafId = window.requestAnimationFrame(animate);
     }
 
     const unsubscribeFromCanvasPause = subscribeToCanvasPause((paused) => {
@@ -79,22 +86,21 @@ export default function NeonCityScene() {
       else start();
     });
 
-    draw(0);
     const observer = typeof IntersectionObserver === "undefined"
       ? null
       : new IntersectionObserver(([entry]) => {
           isVisible = entry.isIntersecting;
-          if (isVisible) start();
+          if (isVisible) { initialize(); start(); }
           else stop();
         }, { threshold: 0.08 });
     observer?.observe(canvas);
-    if (isVisible) start();
+    if (isVisible) { initialize(); start(); }
 
     function handleMotionChange() {
       if (reducedMotion.matches) {
         stop();
         elapsed = 0;
-        draw(0);
+        if (isVisible) { initialize(); draw(0); }
       } else {
         start();
       }
@@ -105,6 +111,7 @@ export default function NeonCityScene() {
       isMounted = false;
       unsubscribeFromCanvasPause();
       stop();
+      paintFrame?.dispose();
       observer?.disconnect();
       reducedMotion.removeEventListener("change", handleMotionChange);
     };

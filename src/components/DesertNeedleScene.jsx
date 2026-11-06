@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import createDesertNeedle, { DESERT_PALETTE } from "./desertNeedleSkyline";
-import { setupCanvasSurface } from "./canvasSurface";
+import { createAsciiFramePainter, setupCanvasSurface } from "./canvasSurface";
 import { subscribeToCanvasPause } from "./canvasPause";
 
 const WIDTH = 192;
@@ -20,13 +20,14 @@ export default function DesertNeedleScene() {
     const context = canvas?.getContext("2d");
     if (!canvas || !context) return undefined;
 
-    const clearCanvas = setupCanvasSurface(canvas, context, WIDTH * CELL_WIDTH, HEIGHT * CELL_HEIGHT);
+    setupCanvasSurface(canvas, context, WIDTH * CELL_WIDTH, HEIGHT * CELL_HEIGHT);
     context.font = `${CELL_HEIGHT}px "DM Mono", monospace`;
     context.textAlign = "center";
     context.textBaseline = "middle";
 
-    const renderFrame = createDesertNeedle();
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    let renderFrame = null;
+    let paintFrame = null;
     let animationFrame = 0;
     let lastFrame = 0;
     let elapsed = 0;
@@ -36,24 +37,22 @@ export default function DesertNeedleScene() {
     let pagePaused = false;
 
     function draw(seconds) {
-      const frame = renderFrame(seconds);
-      const textRows = frame.text.split("\n");
-      const colorRows = frame.color.split("\n");
-      clearCanvas();
+      if (!renderFrame || !paintFrame) return;
+      paintFrame(renderFrame(seconds));
+    }
 
-      for (let y = 0; y < HEIGHT; y += 1) {
-        const text = textRows[y] || "";
-        const colors = colorRows[y] || "";
-        for (let x = 0; x < WIDTH; x += 1) {
-          const character = text.charAt(x);
-          if (!character || character === " ") continue;
-          const shade = SHADE_LEVELS.indexOf(character);
-          const displayCharacter = SHADES[shade] || "·";
-          const key = colors.charAt(x);
-          context.fillStyle = DESERT_PALETTE[key] || "#d9e2e7";
-          context.fillText(displayCharacter, x * CELL_WIDTH + CELL_WIDTH / 2, y * CELL_HEIGHT + CELL_HEIGHT / 2);
-        }
-      }
+    function initialize() {
+      if (renderFrame) return;
+      renderFrame = createDesertNeedle();
+      paintFrame = createAsciiFramePainter(context, {
+        columns: WIDTH,
+        rows: HEIGHT,
+        cellWidth: CELL_WIDTH,
+        cellHeight: CELL_HEIGHT,
+        colorFor: (key) => DESERT_PALETTE[key] || "#d9e2e7",
+        characterFor: (character) => SHADES[SHADE_LEVELS.indexOf(character)] || "·",
+      });
+      draw(0);
     }
 
     function stop() {
@@ -79,7 +78,7 @@ export default function DesertNeedleScene() {
     }
 
     function start() {
-      if (mounted && visible && !pagePaused && !reducedMotion.matches && !animationFrame) {
+      if (mounted && visible && renderFrame && !pagePaused && !reducedMotion.matches && !animationFrame) {
         animationFrame = window.requestAnimationFrame(animate);
       }
     }
@@ -90,22 +89,21 @@ export default function DesertNeedleScene() {
       else start();
     });
 
-    draw(0);
     const observer = typeof IntersectionObserver === "undefined"
       ? null
       : new IntersectionObserver(([entry]) => {
           visible = entry.isIntersecting;
-          if (visible) start();
+          if (visible) { initialize(); start(); }
           else stop();
         }, { threshold: 0.05 });
     observer?.observe(canvas);
-    if (visible) start();
+    if (visible) { initialize(); start(); }
 
     function handleMotionChange() {
       if (reducedMotion.matches) {
         stop();
         elapsed = 0;
-        draw(0);
+        if (visible) { initialize(); draw(0); }
       } else {
         start();
       }
@@ -116,6 +114,7 @@ export default function DesertNeedleScene() {
       mounted = false;
       unsubscribeFromCanvasPause();
       stop();
+      paintFrame?.dispose();
       observer?.disconnect();
       reducedMotion.removeEventListener("change", handleMotionChange);
     };

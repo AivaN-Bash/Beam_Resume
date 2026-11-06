@@ -6,7 +6,15 @@
 import { fbm, noise2, clamp, lerp, KEYS } from "./viaductNoise";
 
 const W = 192, H = 108;
-const hex = (h) => [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16));
+const HEX_CACHE = new Map();
+const hex = (h) => {
+  let value = HEX_CACHE.get(h);
+  if (!value) {
+    value = [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16));
+    HEX_CACHE.set(h, value);
+  }
+  return value;
+};
 const mix = (a, b, t) => [lerp(a[0], b[0], t), lerp(a[1], b[1], t), lerp(a[2], b[2], t)];
 
 const ANCHORS = [
