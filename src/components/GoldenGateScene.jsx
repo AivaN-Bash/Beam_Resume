@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import createGoldenGateFog, { GOLDEN_GATE_PALETTE } from "./goldenGateFog";
+import { setupCanvasSurface } from "./canvasSurface";
 
 const WIDTH = 100;
 const HEIGHT = 36;
@@ -15,11 +16,10 @@ export default function GoldenGateScene() {
     const canvas = canvasRef.current;
     if (!canvas) return undefined;
 
-    canvas.width = WIDTH * CELL_WIDTH;
-    canvas.height = HEIGHT * CELL_HEIGHT;
     const context = canvas.getContext("2d");
     if (!context) return undefined;
 
+    const clearCanvas = setupCanvasSurface(canvas, context, WIDTH * CELL_WIDTH, HEIGHT * CELL_HEIGHT);
     const drawScene = createGoldenGateFog();
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
     context.font = '14px "DM Mono", monospace';
@@ -35,7 +35,7 @@ export default function GoldenGateScene() {
 
     function draw(time) {
       const frame = drawScene(time);
-      context.clearRect(0, 0, canvas.width, canvas.height);
+      clearCanvas();
       frame.forEach(([character, colorIndex], index) => {
         if (character === " ") return;
         const x = index % WIDTH;

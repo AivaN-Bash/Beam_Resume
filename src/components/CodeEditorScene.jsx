@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { setupCanvasSurface } from "./canvasSurface";
 
 const WIDTH = 86;
 const HEIGHT = 30;
@@ -207,11 +208,10 @@ export default function CodeEditorScene() {
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return undefined;
-    canvas.width = WIDTH * CELL_WIDTH;
-    canvas.height = HEIGHT * CELL_HEIGHT;
     const context = canvas.getContext("2d");
     if (!context) return undefined;
 
+    const clearCanvas = setupCanvasSurface(canvas, context, WIDTH * CELL_WIDTH, HEIGHT * CELL_HEIGHT);
     const styles = getComputedStyle(canvas);
     const slate = styles.getPropertyValue("--slate").trim() || "#d9e2e7";
     const sand = styles.getPropertyValue("--sand").trim() || "#dbd7c8";
@@ -237,7 +237,7 @@ export default function CodeEditorScene() {
 
     function draw(time) {
       const frame = drawFrame(time);
-      context.clearRect(0, 0, canvas.width, canvas.height);
+      clearCanvas();
       frame.forEach(([character, colorKey], index) => {
         if (character === " ") return;
         const x = index % WIDTH;

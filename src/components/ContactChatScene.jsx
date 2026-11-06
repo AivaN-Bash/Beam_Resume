@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { setupCanvasSurface } from "./canvasSurface";
 
 const WIDTH = 72;
 const HEIGHT = 24;
@@ -142,11 +143,10 @@ export default function ContactChatScene() {
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return undefined;
-    canvas.width = WIDTH * CELL_WIDTH;
-    canvas.height = HEIGHT * CELL_HEIGHT;
     const context = canvas.getContext("2d");
     if (!context) return undefined;
 
+    const clearCanvas = setupCanvasSurface(canvas, context, WIDTH * CELL_WIDTH, HEIGHT * CELL_HEIGHT);
     const styles = getComputedStyle(canvas);
     const slate = styles.getPropertyValue("--slate").trim() || "#d9e2e7";
     const sand = styles.getPropertyValue("--sand").trim() || "#dbd7c8";
@@ -167,7 +167,7 @@ export default function ContactChatScene() {
 
     function draw(seconds) {
       const frame = drawFrame(seconds);
-      context.clearRect(0, 0, canvas.width, canvas.height);
+      clearCanvas();
       frame.forEach(([character, color], index) => {
         if (character === " ") return;
         const x = index % WIDTH;

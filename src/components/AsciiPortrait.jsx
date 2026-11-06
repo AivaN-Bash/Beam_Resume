@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import { createRobotFrame } from "./robotWave";
+import { setupCanvasSurface } from "./canvasSurface";
 
 const COLUMNS = 64;
 const ROWS = 30;
@@ -17,11 +18,10 @@ export default function AsciiPortrait({ className = "" }) {
     const canvas = canvasRef.current;
     if (!canvas) return undefined;
 
-    canvas.width = CROP_COLUMNS * CELL_WIDTH;
-    canvas.height = ROWS * CELL_HEIGHT;
     const context = canvas.getContext("2d");
     if (!context) return undefined;
 
+    const clearCanvas = setupCanvasSurface(canvas, context, CROP_COLUMNS * CELL_WIDTH, ROWS * CELL_HEIGHT);
     const styles = getComputedStyle(canvas);
     const createFrame = createRobotFrame({
       slate: styles.getPropertyValue("--slate").trim() || "#d9e2e7",
@@ -42,7 +42,7 @@ export default function AsciiPortrait({ className = "" }) {
 
     function draw(timeSeconds) {
       const frame = createFrame(timeSeconds);
-      context.clearRect(0, 0, canvas.width, canvas.height);
+      clearCanvas();
 
       for (let y = 0; y < ROWS; y += 1) {
         for (let x = CROP_LEFT; x < CROP_LEFT + CROP_COLUMNS; x += 1) {

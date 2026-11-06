@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import createHarbourSkyline, { HARBOUR_PALETTE } from "./harbourNeonSkyline";
+import { setupCanvasSurface } from "./canvasSurface";
 
 const WIDTH = 192;
 const HEIGHT = 108;
@@ -17,8 +18,7 @@ export default function HarbourSkylineScene() {
     const context = canvas?.getContext("2d");
     if (!canvas || !context) return undefined;
 
-    canvas.width = WIDTH * CELL_WIDTH;
-    canvas.height = HEIGHT * CELL_HEIGHT;
+    const clearCanvas = setupCanvasSurface(canvas, context, WIDTH * CELL_WIDTH, HEIGHT * CELL_HEIGHT);
     context.font = `${CELL_HEIGHT}px "DM Mono", monospace`;
     context.textAlign = "center";
     context.textBaseline = "middle";
@@ -37,7 +37,7 @@ export default function HarbourSkylineScene() {
       const frame = renderFrame(seconds);
       const textRows = frame.text.split("\n");
       const colorRows = frame.color.split("\n");
-      context.clearRect(0, 0, canvas.width, canvas.height);
+      clearCanvas();
 
       for (let y = 0; y < HEIGHT; y += 1) {
         const characters = textRows[y] || "";

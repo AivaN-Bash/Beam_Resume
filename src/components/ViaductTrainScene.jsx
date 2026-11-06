@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import createTrainFrame, { TRAIN_PALETTE } from "./viaductSteamTrain";
+import { setupCanvasSurface } from "./canvasSurface";
 
 const WIDTH = 192;
 const HEIGHT = 108;
@@ -15,11 +16,10 @@ export default function ViaductTrainScene() {
     const canvas = sceneRef.current;
     if (!canvas) return undefined;
 
-    canvas.width = WIDTH * CELL_SIZE;
-    canvas.height = HEIGHT * CELL_SIZE;
     const context = canvas.getContext("2d");
     if (!context) return undefined;
 
+    const clearCanvas = setupCanvasSurface(canvas, context, WIDTH * CELL_SIZE, HEIGHT * CELL_SIZE);
     const drawFrame = createTrainFrame();
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
     context.font = '10px "DM Mono", monospace';
@@ -37,7 +37,7 @@ export default function ViaductTrainScene() {
       const { text, color } = drawFrame(seconds);
       const textRows = text.split("\n");
       const colorRows = color.split("\n");
-      context.clearRect(0, 0, canvas.width, canvas.height);
+      clearCanvas();
 
       textRows.forEach((row, y) => {
         const glyphs = [...row];

@@ -1,12 +1,14 @@
+import { lazy, Suspense } from "react";
 import { Link, Route, Routes } from "react-router-dom";
 import Arrow from "./components/Arrow";
 import SiteLayout from "./components/SiteLayout";
-import About from "./pages/About";
-import Contact from "./pages/Contact";
-import Experience from "./pages/Experience";
-import Home from "./pages/Home";
-import Projects from "./pages/Projects";
-import Skills from "./pages/Skills";
+
+const About = lazy(() => import("./pages/About"));
+const Contact = lazy(() => import("./pages/Contact"));
+const Experience = lazy(() => import("./pages/Experience"));
+const Home = lazy(() => import("./pages/Home"));
+const Projects = lazy(() => import("./pages/Projects"));
+const Skills = lazy(() => import("./pages/Skills"));
 
 function NotFound() {
   return (
@@ -21,15 +23,17 @@ function NotFound() {
 export default function App() {
   return (
     <SiteLayout>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/experience" element={<Experience />} />
-        <Route path="/projects" element={<Projects />} />
-        <Route path="/skills" element={<Skills />} />
-        <Route path="/contact" element={<Contact />} />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
+      <Suspense fallback={<div className="route-loading" role="status">Loading page…</div>}>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/experience" element={<Experience />} />
+          <Route path="/projects" element={<Projects />} />
+          <Route path="/skills" element={<Skills />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </Suspense>
     </SiteLayout>
   );
 }
