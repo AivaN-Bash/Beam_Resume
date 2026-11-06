@@ -1,0 +1,19 @@
+@media (max-width: 800px) {
+  .menu-toggle,
+  .nav .nav-cta {
+    min-height: 44px;
+  }
+
+  .menu-toggle {
+    width: 44px;
+  }
+}
+
+@media (max-width: 360px) {
+  .nav-cta {
+    gap: 4px;
+    padding-right: 9px;
+    padding-left: 9px;
+    font-size: 11px;
+  }
+}
