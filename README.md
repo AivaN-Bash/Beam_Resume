@@ -28,6 +28,7 @@ npm run dev
 ```
 
 Vite serves the site at `http://localhost:5174`.
+The default development server listens only on this computer. Use `npm run dev:lan` when you intentionally need to preview it from another device on your local network.
 
 ## Build
 

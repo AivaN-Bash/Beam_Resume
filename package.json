@@ -4,7 +4,8 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite --host 0.0.0.0 --port 5174 --strictPort",
+    "dev": "vite --host 127.0.0.1 --port 5174 --strictPort",
+    "dev:lan": "vite --host 0.0.0.0 --port 5174 --strictPort",
     "build": "vite build",
     "postbuild": "node scripts/copy-404.mjs",
     "preview": "vite preview"
