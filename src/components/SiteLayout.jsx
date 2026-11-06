@@ -59,8 +59,8 @@ export default function SiteLayout({ children }) {
         </Link>
         <nav className="desktop-nav" aria-label="Main navigation">
           {nav.map(([label, path]) => (
-            <NavLink key={path} to={path} end className={({ isActive }) => isActive ? "active" : ""}>
-              {label}
+            <NavLink key={path} to={path} end data-label={label} className={({ isActive }) => isActive ? "active" : ""}>
+              <span className="nav-link-label">{label}</span>
             </NavLink>
           ))}
         </nav>
@@ -80,7 +80,7 @@ export default function SiteLayout({ children }) {
         <nav id="mobile-navigation" className={`mobile-nav${menuOpen ? " is-open" : ""}`} aria-label="Mobile navigation" aria-hidden={!menuOpen}>
           {nav.map(([label, path], index) => (
             <NavLink key={path} to={path} end className={({ isActive }) => isActive ? "active" : ""} tabIndex={menuOpen ? 0 : -1}>
-              <span>0{index + 1}</span>{label}
+              <span className="mobile-nav-index">0{index + 1}</span><span className="mobile-nav-label">{label}</span><Arrow />
             </NavLink>
           ))}
         </nav>
