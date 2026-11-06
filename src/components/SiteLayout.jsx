@@ -76,7 +76,21 @@ export default function SiteLayout({ children }) {
           <span />
           <span />
         </button>
-        <Link className="nav-cta" to="/contact"><span>Let’s talk</span><Arrow /></Link>
+        <Link className="nav-cta" to="/contact">
+          <span className="nav-cta-label">Let’s talk</span>
+          <svg className="nav-cta-orbit" viewBox="0 0 120 46" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+            <defs>
+              <linearGradient id="nav-cta-orbit-gradient" x1="0%" y1="100%" x2="100%" y2="0%">
+                <stop className="nav-cta-orbit-stop-caramel" offset="0%" />
+                <stop className="nav-cta-orbit-stop-sand" offset="52%" />
+                <stop className="nav-cta-orbit-stop-slate" offset="100%" />
+              </linearGradient>
+            </defs>
+            <rect className="nav-cta-orbit-track" x="1" y="1" width="118" height="44" rx="22" pathLength="100" />
+            <rect className="nav-cta-orbit-light" x="1" y="1" width="118" height="44" rx="22" pathLength="100" />
+          </svg>
+          <Arrow />
+        </Link>
         <nav id="mobile-navigation" className={`mobile-nav${menuOpen ? " is-open" : ""}`} aria-label="Mobile navigation" aria-hidden={!menuOpen}>
           {nav.map(([label, path], index) => (
             <NavLink key={path} to={path} end className={({ isActive }) => isActive ? "active" : ""} tabIndex={menuOpen ? 0 : -1}>
