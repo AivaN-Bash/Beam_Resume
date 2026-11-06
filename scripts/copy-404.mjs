@@ -8,20 +8,75 @@
 // BrowserRouter reads that real URL, an exact copy of index.html shipped as
 // 404.html is enough: the app boots the same way, sees the actual path, and
 // react-router renders the right page.
-import { copyFileSync, mkdirSync } from "node:fs";
+import { copyFileSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
+import { pageMetadata } from "../src/data/portfolio.js";
 
 const distDir = join(dirname(fileURLToPath(import.meta.url)), "..", "dist");
+const indexPath = join(distDir, "index.html");
+const indexHtml = readFileSync(indexPath, "utf8");
+const canonicalMatch = indexHtml.match(/<link\s+rel="canonical"\s+href="([^"]+)"\s*\/>/);
 
-copyFileSync(join(distDir, "index.html"), join(distDir, "404.html"));
+if (!canonicalMatch) throw new Error("Expected a canonical URL in dist/index.html.");
+
+const siteUrl = new URL(canonicalMatch[1]);
+if (siteUrl.protocol !== "https:" || !siteUrl.pathname.endsWith("/")) {
+  throw new Error("The canonical site URL must be an HTTPS URL ending with a slash.");
+}
+
+function escapeHtml(value) {
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("\"", "&quot;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;");
+}
+
+function replaceTag(html, pattern, replacement, label) {
+  if (!pattern.test(html)) throw new Error(`Expected ${label} in dist/index.html.`);
+  return html.replace(pattern, replacement);
+}
+
+function createRouteHtml(route, metadata) {
+  const routeUrl = route === "/" ? siteUrl.href : new URL(route.slice(1), siteUrl).href;
+  let html = replaceTag(indexHtml, /<title>[\s\S]*?<\/title>/, `<title>${escapeHtml(metadata.title)}</title>`, "a title element");
+
+  const metaValues = [
+    ["name", "description", metadata.description],
+    ["property", "og:title", metadata.title],
+    ["property", "og:description", metadata.description],
+    ["property", "og:url", routeUrl],
+    ["name", "twitter:title", metadata.title],
+    ["name", "twitter:description", metadata.description],
+  ];
+
+  for (const [attribute, key, value] of metaValues) {
+    const pattern = new RegExp(`<meta\\b(?=[^>]*\\b${attribute}="${key}")[^>]*>`);
+    const tag = `<meta ${attribute}="${key}" content="${escapeHtml(value)}" />`;
+    html = replaceTag(html, pattern, tag, `the ${key} meta tag`);
+  }
+
+  const canonicalPattern = /<link\b(?=[^>]*\brel="canonical")[^>]*>/;
+  html = replaceTag(html, canonicalPattern, `<link rel="canonical" href="${escapeHtml(routeUrl)}" />`, "a canonical link");
+  return html;
+}
+
+const homeMetadata = pageMetadata["/"];
+if (!homeMetadata) throw new Error("Missing homepage metadata.");
+writeFileSync(indexPath, createRouteHtml("/", homeMetadata));
+
+copyFileSync(indexPath, join(distDir, "404.html"));
 console.log("Copied dist/index.html -> dist/404.html for GitHub Pages SPA routing.");
 
 // GitHub Pages does not provide SPA rewrites. Route entry files let direct
 // links and refreshes resolve with HTTP 200 while BrowserRouter keeps the path.
-for (const route of ["about", "experience", "projects", "skills", "contact"]) {
-  const routeDir = join(distDir, route);
+for (const [route, metadata] of Object.entries(pageMetadata)) {
+  if (route === "/") continue;
+  const routeName = route.slice(1);
+  if (!/^[a-z0-9-]+$/.test(routeName)) throw new Error(`Invalid static route: ${route}`);
+  const routeDir = join(distDir, routeName);
   mkdirSync(routeDir, { recursive: true });
-  copyFileSync(join(distDir, "index.html"), join(routeDir, "index.html"));
+  writeFileSync(join(routeDir, "index.html"), createRouteHtml(route, metadata));
 }
 console.log("Created static entry points for portfolio routes.");

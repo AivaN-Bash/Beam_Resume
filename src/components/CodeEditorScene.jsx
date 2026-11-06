@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { setupCanvasSurface } from "./canvasSurface";
-import { subscribeToCanvasPause } from "./canvasPause";
+import { startCanvasLoop } from "./canvasLoop";
 
 const WIDTH = 86;
 const HEIGHT = 30;
@@ -222,94 +222,24 @@ export default function CodeEditorScene() {
     const dim = "color-mix(in srgb, " + caramel + " 52%, " + paper + ")";
     const line = "color-mix(in srgb, " + sand + " 24%, " + paper + ")";
     const palette = [slate, muted, caramel, sand, slate, caramel, sand, dim, line, sand, paper];
-    const drawFrame = createEditorFrame();
-    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
-
     context.font = '17px "DM Mono", monospace';
     context.textAlign = "center";
     context.textBaseline = "middle";
-
-    let rafId = 0;
-    let lastDraw = 0;
-    let startTime = null;
-    let elapsed = 0;
-    let isVisible = typeof IntersectionObserver === "undefined";
-    let isMounted = true;
-    let pagePaused = false;
-
-    function draw(time) {
-      const frame = drawFrame(time);
-      clearCanvas();
-      frame.forEach(([character, colorKey], index) => {
-        if (character === " ") return;
-        const x = index % WIDTH;
-        const y = Math.floor(index / WIDTH);
-        context.fillStyle = palette[Number(colorKey)] || slate;
-        context.fillText(character, x * CELL_WIDTH + CELL_WIDTH / 2, y * CELL_HEIGHT + CELL_HEIGHT / 2);
-      });
-    }
-
-    function stop() {
-      window.cancelAnimationFrame(rafId);
-      rafId = 0;
-      if (startTime !== null) {
-        elapsed += (performance.now() - startTime) / 1000;
-        startTime = null;
+    return startCanvasLoop(canvas, () => {
+      const drawFrame = createEditorFrame();
+      function draw(time) {
+        const frame = drawFrame(time);
+        clearCanvas();
+        frame.forEach(([character, colorKey], index) => {
+          if (character === " ") return;
+          const x = index % WIDTH;
+          const y = Math.floor(index / WIDTH);
+          context.fillStyle = palette[Number(colorKey)] || slate;
+          context.fillText(character, x * CELL_WIDTH + CELL_WIDTH / 2, y * CELL_HEIGHT + CELL_HEIGHT / 2);
+        });
       }
-    }
-
-    function animate(timestamp) {
-      if (!isMounted || !isVisible || pagePaused || reducedMotion.matches) {
-        rafId = 0;
-        return;
-      }
-      if (startTime === null) startTime = timestamp;
-      if (timestamp - lastDraw >= FRAME_INTERVAL) {
-        lastDraw = timestamp;
-        draw(elapsed + (timestamp - startTime) / 1000);
-      }
-      rafId = window.requestAnimationFrame(animate);
-    }
-
-    function start() {
-      if (isMounted && isVisible && !pagePaused && !reducedMotion.matches && !rafId) rafId = window.requestAnimationFrame(animate);
-    }
-
-    const unsubscribeFromCanvasPause = subscribeToCanvasPause((paused) => {
-      pagePaused = paused;
-      if (paused) stop();
-      else start();
-    });
-
-    draw(reducedMotion.matches ? drawFrame.staticTime : 0);
-    const observer = typeof IntersectionObserver === "undefined"
-      ? null
-      : new IntersectionObserver(([entry]) => {
-          isVisible = entry.isIntersecting;
-          if (isVisible) start();
-          else stop();
-        }, { threshold: 0.08 });
-    observer?.observe(canvas);
-    if (isVisible) start();
-
-    function handleMotionChange() {
-      if (reducedMotion.matches) {
-        stop();
-        elapsed = 0;
-        draw(drawFrame.staticTime);
-      } else {
-        start();
-      }
-    }
-    reducedMotion.addEventListener("change", handleMotionChange);
-
-    return () => {
-      isMounted = false;
-      unsubscribeFromCanvasPause();
-      stop();
-      observer?.disconnect();
-      reducedMotion.removeEventListener("change", handleMotionChange);
-    };
+      return { draw, staticTime: drawFrame.staticTime, duration: drawFrame.duration };
+    }, { frameInterval: FRAME_INTERVAL });
   }, []);
 
   return <canvas ref={canvasRef} className="code-editor-canvas" aria-hidden="true" />;

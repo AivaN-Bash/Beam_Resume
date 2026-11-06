@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { setupCanvasSurface } from "./canvasSurface";
-import { subscribeToCanvasPause } from "./canvasPause";
+import { startCanvasLoop } from "./canvasLoop";
 
 const WIDTH = 72;
 const HEIGHT = 24;
@@ -153,95 +153,24 @@ export default function ContactChatScene() {
     const sand = styles.getPropertyValue("--sand").trim() || "#dbd7c8";
     const caramel = styles.getPropertyValue("--caramel").trim() || "#b6815b";
     const palette = [slate, "#999a98", caramel, sand, "#39363a"];
-    const drawFrame = createChatFrame();
-    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
     context.font = `${CELL_HEIGHT}px "DM Mono", monospace`;
     context.textAlign = "center";
     context.textBaseline = "middle";
-
-    let animationFrame = 0;
-    let lastFrame = 0;
-    let elapsed = 0;
-    let startedAt = null;
-    let visible = typeof IntersectionObserver === "undefined";
-    let mounted = true;
-    let pagePaused = false;
-
-    function draw(seconds) {
-      const frame = drawFrame(seconds);
-      clearCanvas();
-      frame.forEach(([character, color], index) => {
-        if (character === " ") return;
-        const x = index % WIDTH;
-        const y = Math.floor(index / WIDTH);
-        context.fillStyle = palette[color] || slate;
-        context.fillText(character, x * CELL_WIDTH + CELL_WIDTH / 2, y * CELL_HEIGHT + CELL_HEIGHT / 2);
-      });
-    }
-
-    function stop() {
-      window.cancelAnimationFrame(animationFrame);
-      animationFrame = 0;
-      if (startedAt !== null) {
-        elapsed += (performance.now() - startedAt) / 1000;
-        startedAt = null;
+    return startCanvasLoop(canvas, () => {
+      const drawFrame = createChatFrame();
+      function draw(seconds) {
+        const frame = drawFrame(seconds);
+        clearCanvas();
+        frame.forEach(([character, color], index) => {
+          if (character === " ") return;
+          const x = index % WIDTH;
+          const y = Math.floor(index / WIDTH);
+          context.fillStyle = palette[color] || slate;
+          context.fillText(character, x * CELL_WIDTH + CELL_WIDTH / 2, y * CELL_HEIGHT + CELL_HEIGHT / 2);
+        });
       }
-    }
-
-    function animate(timestamp) {
-      if (!mounted || !visible || pagePaused || reducedMotion.matches) {
-        animationFrame = 0;
-        return;
-      }
-      if (startedAt === null) startedAt = timestamp;
-      if (timestamp - lastFrame >= FRAME_INTERVAL) {
-        lastFrame = timestamp;
-        draw(elapsed + (timestamp - startedAt) / 1000);
-      }
-      animationFrame = window.requestAnimationFrame(animate);
-    }
-
-    function start() {
-      if (mounted && visible && !pagePaused && !reducedMotion.matches && !animationFrame) {
-        animationFrame = window.requestAnimationFrame(animate);
-      }
-    }
-
-    const unsubscribeFromCanvasPause = subscribeToCanvasPause((paused) => {
-      pagePaused = paused;
-      if (paused) stop();
-      else start();
-    });
-
-    draw(reducedMotion.matches ? drawFrame.staticTime : 0);
-    const observer = typeof IntersectionObserver === "undefined"
-      ? null
-      : new IntersectionObserver(([entry]) => {
-          visible = entry.isIntersecting;
-          if (visible) start();
-          else stop();
-        }, { threshold: 0.08 });
-    observer?.observe(canvas);
-    if (visible) start();
-
-    function handleMotionChange() {
-      if (reducedMotion.matches) {
-        stop();
-        elapsed = 0;
-        draw(drawFrame.staticTime);
-      } else {
-        start();
-      }
-    }
-    reducedMotion.addEventListener("change", handleMotionChange);
-
-    return () => {
-      mounted = false;
-      unsubscribeFromCanvasPause();
-      stop();
-      observer?.disconnect();
-      reducedMotion.removeEventListener("change", handleMotionChange);
-    };
+      return { draw, staticTime: drawFrame.staticTime, duration: drawFrame.duration };
+    }, { frameInterval: FRAME_INTERVAL });
   }, []);
 
   return <canvas className="contact-chat-canvas" ref={canvasRef} aria-hidden="true" />;

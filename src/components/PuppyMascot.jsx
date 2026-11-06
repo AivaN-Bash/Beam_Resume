@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { setupCanvasSurface } from "./canvasSurface";
-import { subscribeToCanvasPause } from "./canvasPause";
+import { startCanvasLoop } from "./canvasLoop";
 import createDogMascot from "./dogMascot";
 
 const WIDTH = 40;
@@ -30,107 +30,33 @@ export default function PuppyMascot() {
       styles.getPropertyValue("--slate").trim() || "#d9e2e7",
       paper,
     ];
-    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const renderFrame = createDogMascot();
-    const previousColors = new Int8Array(WIDTH * HEIGHT).fill(-1);
-    let currentFillStyle = "";
-    let rafId = 0;
-    let lastDraw = 0;
-    let startTime = null;
-    let elapsed = 0;
-    let isVisible = typeof IntersectionObserver === "undefined";
-    let isMounted = true;
-    let pagePaused = false;
+    return startCanvasLoop(canvas, () => {
+      const renderFrame = createDogMascot();
+      const previousColors = new Int8Array(WIDTH * HEIGHT).fill(-1);
+      let currentFillStyle = "";
 
-    function draw(time) {
-      const colors = renderFrame(time);
-      for (let index = 0; index < colors.length; index += 1) {
-        const color = colors[index];
-        if (color === previousColors[index]) continue;
-        const x = index % WIDTH;
-        const y = Math.floor(index / WIDTH);
-        context.clearRect(x, y, 1, 1);
-        if (color >= 0) {
-          const fillStyle = palette[color] || palette[2];
-          if (fillStyle !== currentFillStyle) {
-            context.fillStyle = fillStyle;
-            currentFillStyle = fillStyle;
+      function draw(time) {
+        const colors = renderFrame(time);
+        for (let index = 0; index < colors.length; index += 1) {
+          const color = colors[index];
+          if (color === previousColors[index]) continue;
+          const x = index % WIDTH;
+          const y = Math.floor(index / WIDTH);
+          context.clearRect(x, y, 1, 1);
+          if (color >= 0) {
+            const fillStyle = palette[color] || palette[2];
+            if (fillStyle !== currentFillStyle) {
+              context.fillStyle = fillStyle;
+              currentFillStyle = fillStyle;
+            }
+            context.fillRect(x, y, 1.05, 1.05);
           }
-          context.fillRect(x, y, 1.05, 1.05);
+          previousColors[index] = color;
         }
-        previousColors[index] = color;
       }
-    }
 
-    function stop() {
-      window.cancelAnimationFrame(rafId);
-      rafId = 0;
-      if (startTime !== null) {
-        elapsed += (performance.now() - startTime) / 1000;
-        startTime = null;
-      }
-    }
-
-    function animate(timestamp) {
-      if (!isMounted || !isVisible || pagePaused || reducedMotion.matches) {
-        rafId = 0;
-        return;
-      }
-      if (startTime === null) startTime = timestamp;
-      if (timestamp - lastDraw >= FRAME_INTERVAL) {
-        lastDraw = timestamp;
-        draw(elapsed + (timestamp - startTime) / 1000);
-      }
-      rafId = window.requestAnimationFrame(animate);
-    }
-
-    function start() {
-      if (isMounted && isVisible && !pagePaused && !reducedMotion.matches && !rafId) {
-        rafId = window.requestAnimationFrame(animate);
-      }
-    }
-
-    const unsubscribeFromCanvasPause = subscribeToCanvasPause((paused) => {
-      pagePaused = paused;
-      if (paused) stop();
-      else start();
-    });
-
-    const observer = typeof IntersectionObserver === "undefined"
-      ? null
-      : new IntersectionObserver(([entry]) => {
-          isVisible = entry.isIntersecting;
-          if (isVisible) {
-            draw(reducedMotion.matches ? 0 : elapsed);
-            start();
-          } else {
-            stop();
-          }
-        }, { threshold: 0.01 });
-    observer?.observe(canvas);
-    if (isVisible) {
-      draw(0);
-      start();
-    }
-
-    function handleMotionChange() {
-      if (reducedMotion.matches) {
-        stop();
-        elapsed = 0;
-        if (isVisible) draw(0);
-      } else {
-        start();
-      }
-    }
-    reducedMotion.addEventListener("change", handleMotionChange);
-
-    return () => {
-      isMounted = false;
-      unsubscribeFromCanvasPause();
-      stop();
-      observer?.disconnect();
-      reducedMotion.removeEventListener("change", handleMotionChange);
-    };
+      return { draw };
+    }, { frameInterval: FRAME_INTERVAL, threshold: 0.01 });
   }, []);
 
   return <span className="brand-pup" aria-hidden="true"><canvas ref={canvasRef} /></span>;

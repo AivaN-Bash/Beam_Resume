@@ -8,7 +8,8 @@
     "dev:lan": "vite --host 0.0.0.0 --port 5174 --strictPort",
     "build": "vite build",
     "postbuild": "node scripts/copy-404.mjs",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "react": "^19.1.1",
@@ -16,6 +17,8 @@
     "react-router-dom": "^7.8.2"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.14.0",
+    "@playwright/test": "^1.65.0",
     "@vitejs/plugin-react": "^5.0.2",
     "vite": "^7.1.3"
   }
