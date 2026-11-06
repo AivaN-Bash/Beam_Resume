@@ -1,8 +1,10 @@
 import Page from "../components/Page";
+import DesertNeedleScene from "../components/DesertNeedleScene";
 
 export default function About() {
   return <Page title={<>About<br/><em>me.</em></>} thaiTitle={<>เกี่ยวกับ<br/><span>ฉัน</span></>} index="01">
-    <div className="split">
+    <div className="split about-story">
+      <DesertNeedleScene />
       <div className="section-label">MY STORY</div>
       <div className="content">
         <h2>Technical foundations gave me confidence. <em>Service experience gave me perspective.</em></h2>

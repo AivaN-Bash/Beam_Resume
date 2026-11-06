@@ -25,6 +25,7 @@ export default function Home() {
   return (
     <div className="page home">
       <section className="hero">
+        <HarbourSkylineScene />
         <div className="hero-topline">
           <div className="eyebrow">PORTFOLIO / {new Date().getFullYear()}</div>
           <span className="hero-status"><i aria-hidden="true" /> AVAILABLE FOR WORK</span>
@@ -52,7 +53,6 @@ export default function Home() {
           </div>
 
           <figure className={`hero-portrait${portraitFailed ? " portrait-unavailable" : ""}`}>
-            <HarbourSkylineScene />
             {!portraitFailed && (
               <img
                 src={portraitSrc}

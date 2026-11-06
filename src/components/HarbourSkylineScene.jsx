@@ -113,5 +113,5 @@ export default function HarbourSkylineScene() {
     };
   }, []);
 
-  return <canvas ref={canvasRef} className="harbour-skyline-canvas" aria-hidden="true" />;
+  return <canvas ref={canvasRef} className="hero-skyline-canvas" aria-hidden="true" />;
 }
