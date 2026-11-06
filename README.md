@@ -1,29 +1,24 @@
 # Phawat Tanajiranon — Portfolio
 
-A responsive, multi-page portfolio for Phawat Tanajiranon, built with React and Vite. It presents customer-service and hospitality experience alongside a Computer Science background, personal software projects, skills, and contact details.
+A responsive, multi-page portfolio for Phawat Tanajiranon, presenting customer service experience, Computer Science studies, projects, practical skills, and contact details. The visual system pairs an ink, slate, and warm copper palette with oversized display type, editorial serif copy, and small animated ASCII scenes.
 
 ## Pages
 
-- **Home** — introduction, profile highlights, and links to the rest of the portfolio
-- **About** — education and personal story
-- **Experience** — education and customer-facing work history
-- **Projects** — selected software projects and GitHub profile
-- **Skills** — technical, office, service, and communication skills
-- **Contact** — email, phone, location, and roles of interest
+- **Home** — introduction, portrait, availability, and links to the portfolio sections.
+- **About** — background, study and work history, and a personal statement.
+- **Experience** — Computer Science study, Dollywood rental and retail work, and restaurant service.
+- **Projects** — selected personal projects and GitHub profile link.
+- **Skills** — customer service, technical, office, and communication skills.
+- **Contact** — role interests, email, phone, and an animated introduction.
 
-## Product features
+## Built with
 
-- Responsive layouts for desktop, tablet, and mobile screens
-- Mobile navigation with keyboard support and an Escape-to-close shortcut
-- Crisp, device-aware canvas illustrations that pause off screen, during scrolling, and in hidden tabs, plus bilingual English/Thai headings
-- Reduced-motion support, keyboard focus styles, and a skip-to-content link
-- Page-specific metadata, social sharing tags, and sitemap/robots files
-- GitHub Pages deep-link fallback for refreshed or directly opened routes
+- React 19 and React Router
+- Vite 7
+- Canvas-rendered ASCII illustrations
+- CSS responsive layouts and motion preferences
 
-## Requirements
-
-- Node.js 20.19+ or 22.12+
-- npm
+The layouts adapt across desktop, tablet, and phone widths. Animated scenes pause while off-screen, during page scrolling, when the tab is hidden, and when reduced motion is requested. Route fallback output supports direct links and refreshes on GitHub Pages.
 
 ## Run locally
 
@@ -32,21 +27,20 @@ npm install
 npm run dev
 ```
 
-Vite prints the local development URL after the server starts.
+Vite serves the site at `http://localhost:5174`.
 
-## Build and preview
+## Build
 
 ```bash
 npm run build
-npm run preview
 ```
 
-The production site is generated in `dist/`. The build also creates `dist/404.html` so GitHub Pages can serve client-side routes.
+The production site is written to `dist/`. The post-build script also creates `dist/404.html` for GitHub Pages route fallback.
 
-## Deploy
+## Deployment
 
-The site is hosted on GitHub Pages:
+The site is published with GitHub Actions when changes are pushed to `main`:
 
-<https://aivan-bash.github.io/Beam_Resume/>
+**https://aivan-bash.github.io/Beam_Resume/**
 
-Pushing to `main` triggers the GitHub Actions workflow in `.github/workflows/deploy.yml` to build and deploy the site.
+The workflow is defined in `.github/workflows/deploy.yml`.
