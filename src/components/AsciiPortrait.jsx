@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import { createRobotFrame } from "./robotWave";
 import { setupCanvasSurface } from "./canvasSurface";
+import { subscribeToCanvasPause } from "./canvasPause";
 
 const COLUMNS = 64;
 const ROWS = 30;
@@ -39,6 +40,7 @@ export default function AsciiPortrait({ className = "" }) {
     let previousFrame = 0;
     let startTime = null;
     let isActive = true;
+    let pagePaused = false;
 
     function draw(timeSeconds) {
       const frame = createFrame(timeSeconds);
@@ -55,7 +57,10 @@ export default function AsciiPortrait({ className = "" }) {
     }
 
     function animate(timestamp) {
-      if (!isActive || motionPreference.matches) return;
+      if (!isActive || pagePaused || motionPreference.matches) {
+        animationFrame = 0;
+        return;
+      }
       if (startTime === null) startTime = timestamp;
       if (timestamp - previousFrame >= FRAME_INTERVAL) {
         previousFrame = timestamp;
@@ -66,20 +71,34 @@ export default function AsciiPortrait({ className = "" }) {
 
     function handleMotionPreferenceChange() {
       window.cancelAnimationFrame(animationFrame);
+      animationFrame = 0;
       if (motionPreference.matches) {
         startTime = null;
         draw(0);
-      } else {
+      } else if (!pagePaused) {
         animationFrame = window.requestAnimationFrame(animate);
       }
     }
 
+    const unsubscribeFromCanvasPause = subscribeToCanvasPause((paused) => {
+      pagePaused = paused;
+      if (paused) {
+        window.cancelAnimationFrame(animationFrame);
+        animationFrame = 0;
+      } else if (!motionPreference.matches && !animationFrame) {
+        animationFrame = window.requestAnimationFrame(animate);
+      }
+    });
+
     draw(0);
-    if (!motionPreference.matches) animationFrame = window.requestAnimationFrame(animate);
+    if (!motionPreference.matches && !pagePaused && !animationFrame) {
+      animationFrame = window.requestAnimationFrame(animate);
+    }
     motionPreference.addEventListener("change", handleMotionPreferenceChange);
 
     return () => {
       isActive = false;
+      unsubscribeFromCanvasPause();
       window.cancelAnimationFrame(animationFrame);
       motionPreference.removeEventListener("change", handleMotionPreferenceChange);
     };

@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import createTrainFrame, { TRAIN_PALETTE } from "./viaductSteamTrain";
 import { setupCanvasSurface } from "./canvasSurface";
+import { subscribeToCanvasPause } from "./canvasPause";
 
 const WIDTH = 192;
 const HEIGHT = 108;
@@ -32,6 +33,7 @@ export default function ViaductTrainScene() {
     let elapsed = 0;
     let isVisible = typeof IntersectionObserver === "undefined";
     let isMounted = true;
+    let pagePaused = false;
 
     function draw(seconds) {
       const { text, color } = drawFrame(seconds);
@@ -61,7 +63,7 @@ export default function ViaductTrainScene() {
     }
 
     function animate(timestamp) {
-      if (!isMounted || !isVisible || reducedMotion.matches) {
+      if (!isMounted || !isVisible || pagePaused || reducedMotion.matches) {
         rafId = 0;
         return;
       }
@@ -74,10 +76,16 @@ export default function ViaductTrainScene() {
     }
 
     function startAnimation() {
-      if (isMounted && isVisible && !reducedMotion.matches && !rafId) {
+      if (isMounted && isVisible && !pagePaused && !reducedMotion.matches && !rafId) {
         rafId = window.requestAnimationFrame(animate);
       }
     }
+
+    const unsubscribeFromCanvasPause = subscribeToCanvasPause((paused) => {
+      pagePaused = paused;
+      if (paused) stopAnimation();
+      else startAnimation();
+    });
 
     draw(0);
     const observer = typeof IntersectionObserver === "undefined"
@@ -104,6 +112,7 @@ export default function ViaductTrainScene() {
 
     return () => {
       isMounted = false;
+      unsubscribeFromCanvasPause();
       stopAnimation();
       observer?.disconnect();
       reducedMotion.removeEventListener("change", handleMotionChange);

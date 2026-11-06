@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import createHarbourSkyline, { HARBOUR_PALETTE } from "./harbourNeonSkyline";
 import { setupCanvasSurface } from "./canvasSurface";
+import { subscribeToCanvasPause } from "./canvasPause";
 
 const WIDTH = 192;
 const HEIGHT = 108;
@@ -32,6 +33,7 @@ export default function HarbourSkylineScene() {
     let startedAt = null;
     let visible = typeof IntersectionObserver === "undefined";
     let mounted = true;
+    let pagePaused = false;
 
     function draw(seconds) {
       const frame = renderFrame(seconds);
@@ -65,7 +67,7 @@ export default function HarbourSkylineScene() {
     }
 
     function animate(timestamp) {
-      if (!mounted || !visible || reducedMotion.matches) {
+      if (!mounted || !visible || pagePaused || reducedMotion.matches) {
         frameId = 0;
         return;
       }
@@ -78,10 +80,16 @@ export default function HarbourSkylineScene() {
     }
 
     function start() {
-      if (mounted && visible && !reducedMotion.matches && !frameId) {
+      if (mounted && visible && !pagePaused && !reducedMotion.matches && !frameId) {
         frameId = window.requestAnimationFrame(animate);
       }
     }
+
+    const unsubscribeFromCanvasPause = subscribeToCanvasPause((paused) => {
+      pagePaused = paused;
+      if (paused) stop();
+      else start();
+    });
 
     draw(0);
     const observer = typeof IntersectionObserver === "undefined"
@@ -107,6 +115,7 @@ export default function HarbourSkylineScene() {
 
     return () => {
       mounted = false;
+      unsubscribeFromCanvasPause();
       stop();
       observer?.disconnect();
       reducedMotion.removeEventListener("change", handleMotionChange);

@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import createDesertNeedle, { DESERT_PALETTE } from "./desertNeedleSkyline";
 import { setupCanvasSurface } from "./canvasSurface";
+import { subscribeToCanvasPause } from "./canvasPause";
 
 const WIDTH = 192;
 const HEIGHT = 108;
@@ -32,6 +33,7 @@ export default function DesertNeedleScene() {
     let startedAt = null;
     let visible = typeof IntersectionObserver === "undefined";
     let mounted = true;
+    let pagePaused = false;
 
     function draw(seconds) {
       const frame = renderFrame(seconds);
@@ -64,7 +66,7 @@ export default function DesertNeedleScene() {
     }
 
     function animate(timestamp) {
-      if (!mounted || !visible || reducedMotion.matches) {
+      if (!mounted || !visible || pagePaused || reducedMotion.matches) {
         animationFrame = 0;
         return;
       }
@@ -77,10 +79,16 @@ export default function DesertNeedleScene() {
     }
 
     function start() {
-      if (mounted && visible && !reducedMotion.matches && !animationFrame) {
+      if (mounted && visible && !pagePaused && !reducedMotion.matches && !animationFrame) {
         animationFrame = window.requestAnimationFrame(animate);
       }
     }
+
+    const unsubscribeFromCanvasPause = subscribeToCanvasPause((paused) => {
+      pagePaused = paused;
+      if (paused) stop();
+      else start();
+    });
 
     draw(0);
     const observer = typeof IntersectionObserver === "undefined"
@@ -106,6 +114,7 @@ export default function DesertNeedleScene() {
 
     return () => {
       mounted = false;
+      unsubscribeFromCanvasPause();
       stop();
       observer?.disconnect();
       reducedMotion.removeEventListener("change", handleMotionChange);

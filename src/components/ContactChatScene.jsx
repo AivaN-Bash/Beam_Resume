@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import { setupCanvasSurface } from "./canvasSurface";
+import { subscribeToCanvasPause } from "./canvasPause";
 
 const WIDTH = 72;
 const HEIGHT = 24;
@@ -164,6 +165,7 @@ export default function ContactChatScene() {
     let startedAt = null;
     let visible = typeof IntersectionObserver === "undefined";
     let mounted = true;
+    let pagePaused = false;
 
     function draw(seconds) {
       const frame = drawFrame(seconds);
@@ -187,7 +189,7 @@ export default function ContactChatScene() {
     }
 
     function animate(timestamp) {
-      if (!mounted || !visible || reducedMotion.matches) {
+      if (!mounted || !visible || pagePaused || reducedMotion.matches) {
         animationFrame = 0;
         return;
       }
@@ -200,10 +202,16 @@ export default function ContactChatScene() {
     }
 
     function start() {
-      if (mounted && visible && !reducedMotion.matches && !animationFrame) {
+      if (mounted && visible && !pagePaused && !reducedMotion.matches && !animationFrame) {
         animationFrame = window.requestAnimationFrame(animate);
       }
     }
+
+    const unsubscribeFromCanvasPause = subscribeToCanvasPause((paused) => {
+      pagePaused = paused;
+      if (paused) stop();
+      else start();
+    });
 
     draw(reducedMotion.matches ? drawFrame.staticTime : 0);
     const observer = typeof IntersectionObserver === "undefined"
@@ -229,6 +237,7 @@ export default function ContactChatScene() {
 
     return () => {
       mounted = false;
+      unsubscribeFromCanvasPause();
       stop();
       observer?.disconnect();
       reducedMotion.removeEventListener("change", handleMotionChange);

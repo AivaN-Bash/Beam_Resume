@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import createNeonCityRain, { NEON_CITY_PALETTE } from "./neonCityRain";
 import { setupCanvasSurface } from "./canvasSurface";
+import { subscribeToCanvasPause } from "./canvasPause";
 
 const WIDTH = 100;
 const HEIGHT = 36;
@@ -32,6 +33,7 @@ export default function NeonCityScene() {
     let elapsed = 0;
     let isVisible = typeof IntersectionObserver === "undefined";
     let isMounted = true;
+    let pagePaused = false;
 
     function draw(time) {
       const frame = drawScene(time);
@@ -55,7 +57,7 @@ export default function NeonCityScene() {
     }
 
     function animate(timestamp) {
-      if (!isMounted || !isVisible || reducedMotion.matches) {
+      if (!isMounted || !isVisible || pagePaused || reducedMotion.matches) {
         rafId = 0;
         return;
       }
@@ -68,8 +70,14 @@ export default function NeonCityScene() {
     }
 
     function start() {
-      if (isMounted && isVisible && !reducedMotion.matches && !rafId) rafId = window.requestAnimationFrame(animate);
+      if (isMounted && isVisible && !pagePaused && !reducedMotion.matches && !rafId) rafId = window.requestAnimationFrame(animate);
     }
+
+    const unsubscribeFromCanvasPause = subscribeToCanvasPause((paused) => {
+      pagePaused = paused;
+      if (paused) stop();
+      else start();
+    });
 
     draw(0);
     const observer = typeof IntersectionObserver === "undefined"
@@ -95,6 +103,7 @@ export default function NeonCityScene() {
 
     return () => {
       isMounted = false;
+      unsubscribeFromCanvasPause();
       stop();
       observer?.disconnect();
       reducedMotion.removeEventListener("change", handleMotionChange);

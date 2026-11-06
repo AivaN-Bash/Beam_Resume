@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import { setupCanvasSurface } from "./canvasSurface";
+import { subscribeToCanvasPause } from "./canvasPause";
 
 const WIDTH = 96;
 const HEIGHT = 28;
@@ -206,6 +207,7 @@ export default function DnsResolverScene() {
     let elapsed = 0;
     let isVisible = typeof IntersectionObserver === "undefined";
     let isMounted = true;
+    let pagePaused = false;
 
     function draw(time) {
       const frame = drawFrame(time);
@@ -229,7 +231,7 @@ export default function DnsResolverScene() {
     }
 
     function animate(timestamp) {
-      if (!isMounted || !isVisible || reducedMotion.matches) {
+      if (!isMounted || !isVisible || pagePaused || reducedMotion.matches) {
         rafId = 0;
         return;
       }
@@ -242,8 +244,14 @@ export default function DnsResolverScene() {
     }
 
     function start() {
-      if (isMounted && isVisible && !reducedMotion.matches && !rafId) rafId = window.requestAnimationFrame(animate);
+      if (isMounted && isVisible && !pagePaused && !reducedMotion.matches && !rafId) rafId = window.requestAnimationFrame(animate);
     }
+
+    const unsubscribeFromCanvasPause = subscribeToCanvasPause((paused) => {
+      pagePaused = paused;
+      if (paused) stop();
+      else start();
+    });
 
     draw(reducedMotion.matches ? drawFrame.staticTime : 0);
     const observer = typeof IntersectionObserver === "undefined"
@@ -269,6 +277,7 @@ export default function DnsResolverScene() {
 
     return () => {
       isMounted = false;
+      unsubscribeFromCanvasPause();
       stop();
       observer?.disconnect();
       reducedMotion.removeEventListener("change", handleMotionChange);
