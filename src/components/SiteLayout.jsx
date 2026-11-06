@@ -85,7 +85,7 @@ export default function SiteLayout({ children }) {
               <linearGradient id="nav-cta-orbit-gradient" x1="0%" y1="100%" x2="100%" y2="0%">
                 <stop className="nav-cta-orbit-stop-caramel" offset="0%" />
                 <stop className="nav-cta-orbit-stop-sand" offset="52%" />
-                <stop className="nav-cta-orbit-stop-slate" offset="100%" />
+                <stop className="nav-cta-orbit-stop-copper" offset="100%" />
               </linearGradient>
             </defs>
             <rect className="nav-cta-orbit-track" x="1" y="1" width="118" height="44" rx="22" pathLength="100" />
