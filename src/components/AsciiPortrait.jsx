@@ -67,7 +67,17 @@ export default function AsciiPortrait({ src, className = "" }) {
   return (
     <span className={`ascii-portrait ${className}`.trim()} aria-hidden="true">
       <canvas ref={canvasRef} width={COLUMNS * CELL_SIZE} height={ROWS * CELL_SIZE} />
-      <span className="ascii-portrait-scan" />
+      <svg className="ascii-portrait-orbit" viewBox="0 0 80 100" preserveAspectRatio="none" focusable="false">
+        <defs>
+          <linearGradient id="ascii-portrait-orbit-gradient" x1="0%" y1="100%" x2="100%" y2="0%">
+            <stop className="ascii-orbit-caramel" offset="0%" />
+            <stop className="ascii-orbit-sand" offset="52%" />
+            <stop className="ascii-orbit-slate" offset="100%" />
+          </linearGradient>
+        </defs>
+        <rect className="ascii-orbit-track" x="2" y="2" width="76" height="96" rx="9" pathLength="100" />
+        <rect className="ascii-orbit-light" x="2" y="2" width="76" height="96" rx="9" pathLength="100" />
+      </svg>
     </span>
   );
 }
