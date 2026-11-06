@@ -35,7 +35,7 @@ Vite serves the site at `http://localhost:5174`.
 npm run build
 ```
 
-The production site is written to `dist/`. The post-build script also creates `dist/404.html` for GitHub Pages route fallback.
+The production site is written to `dist/`. The post-build script creates route entry points and a `dist/404.html` fallback so GitHub Pages supports direct links and refreshes.
 
 ## Deployment
 
