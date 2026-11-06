@@ -22,11 +22,11 @@ export default function Contact() {
       </div>
     </div>
     <div className="contact-invitation">
-      <p className="placeholder-note">Have a role in mind? Send me a message. I am happy to tell you more about my experience.</p>
       <figure className="contact-chat-figure" aria-label="An animated example conversation about work opportunities">
         <ContactChatScene />
         <figcaption><span>A QUICK INTRO</span><span>OPEN TO A CONVERSATION</span></figcaption>
       </figure>
+      <p className="placeholder-note">Have a role in mind? Send me a message. I am happy to tell you more about my experience.</p>
     </div>
   </Page>;
 }
