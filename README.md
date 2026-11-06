@@ -15,7 +15,7 @@ A responsive, multi-page portfolio for Phawat Tanajiranon, built with React and 
 
 - Responsive layouts for desktop, tablet, and mobile screens
 - Mobile navigation with keyboard support and an Escape-to-close shortcut
-- Memory-conscious, visibility-paused canvas illustrations and bilingual English/Thai headings
+- Crisp, device-aware canvas illustrations that pause off screen, plus bilingual English/Thai headings
 - Reduced-motion support, keyboard focus styles, and a skip-to-content link
 - Page-specific metadata, social sharing tags, and sitemap/robots files
 - GitHub Pages deep-link fallback for refreshed or directly opened routes
