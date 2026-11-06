@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import Arrow from "../components/Arrow";
+import AsciiPortrait from "../components/AsciiPortrait";
 import useBilingualToggle from "../components/useBilingualToggle";
 
 const marqueeItems = [
@@ -44,6 +45,7 @@ export default function Home() {
             <div className="hero-actions">
               <Link className="button" to="/contact">Let’s talk <Arrow /></Link>
               <Link className="text-link" to="/projects">Explore my work <Arrow /></Link>
+              <AsciiPortrait src={portraitSrc} className="hero-ascii" />
             </div>
           </div>
 
