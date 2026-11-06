@@ -17,7 +17,7 @@ export default function Experience() {
         <div className="time">MAR — JUN 2023<br/><small>USA</small></div>
         <div className="timeline-entry-grid">
           <div className="timeline-entry-copy"><h2>Dollywood Rental & Retail</h2><p>Helped guests rent scooters, explained how to use them safely, entered bookings, kept records, and prepared equipment for the next day.</p><span className="tag">WORK & TRAVEL</span></div>
-          <figure className="timeline-illustration timeline-illustration-landscape"><GoldenGateScene /><figcaption><span>LANDSCAPE STUDY / 02</span><span>BRIDGE · FOG</span></figcaption></figure>
+          <figure className="timeline-illustration timeline-illustration-landscape timeline-illustration-flipped"><GoldenGateScene /><figcaption><span>LANDSCAPE STUDY / 02</span><span>BRIDGE · FOG</span></figcaption></figure>
         </div>
       </div>
       <div className="timeline-item">

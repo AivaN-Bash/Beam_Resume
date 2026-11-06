@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import Arrow from "./Arrow";
 import BackToTop from "./BackToTop";
+import PuppyMascot from "./PuppyMascot";
 import { nav, pageMetadata } from "../data/portfolio";
 
 export default function SiteLayout({ children }) {
@@ -56,6 +57,7 @@ export default function SiteLayout({ children }) {
             <img src={`${import.meta.env.BASE_URL}pt-mark.svg`} alt="" width="36" height="36" />
           </span>
           <strong>PHAWAT<br/>TANAJIRANON</strong>
+          <PuppyMascot />
         </Link>
         <nav className="desktop-nav" aria-label="Main navigation">
           {nav.map(([label, path]) => (

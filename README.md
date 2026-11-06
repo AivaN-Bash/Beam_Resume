@@ -7,7 +7,7 @@ A responsive, multi-page portfolio for Phawat Tanajiranon, presenting customer s
 - **Home** — introduction, portrait, availability, and links to the portfolio sections.
 - **About** — background, study and work history, and a personal statement.
 - **Experience** — Computer Science study, Dollywood rental and retail work, and restaurant service.
-- **Projects** — selected personal projects and GitHub profile link.
+- **Projects** — selected personal projects, animated ASCII artwork, and a GitHub profile link.
 - **Skills** — customer service, technical, office, and communication skills.
 - **Contact** — role interests, email, phone, and an animated introduction.
 
@@ -15,7 +15,7 @@ A responsive, multi-page portfolio for Phawat Tanajiranon, presenting customer s
 
 - React 19 and React Router
 - Vite 7
-- Canvas-rendered ASCII illustrations
+- Canvas-rendered ASCII illustrations for project diagrams, experience, and the small header mascot
 - CSS responsive layouts and motion preferences
 
 The layouts adapt across desktop, tablet, and phone widths. Animated scenes initialize when they approach the viewport, repaint only changed ASCII cells in short batches, and pause while off-screen, during page scrolling, when the tab is hidden, or when reduced motion is requested. This keeps decorative canvas work from blocking the main page content during startup.
