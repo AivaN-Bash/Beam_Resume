@@ -1,83 +1,93 @@
 import { useEffect, useRef } from "react";
+import { createRobotFrame } from "./robotWave";
 
-const COLUMNS = 24;
+const COLUMNS = 64;
 const ROWS = 30;
-const CELL_SIZE = 10;
+const CELL_WIDTH = 10;
+const CELL_HEIGHT = 12;
+const CROP_LEFT = 14;
+const CROP_COLUMNS = 48;
+const FRAME_INTERVAL = 1000 / 24;
 
-export default function AsciiPortrait({ src, className = "" }) {
+/** Renders the adapted waving robot inside the compact hero decoration slot. */
+export default function AsciiPortrait({ className = "" }) {
   const canvasRef = useRef(null);
 
   useEffect(() => {
     const canvas = canvasRef.current;
-    const context = canvas?.getContext("2d");
-    if (!canvas || !context) return undefined;
+    if (!canvas) return undefined;
 
-    const image = new Image();
-    image.decoding = "async";
+    canvas.width = CROP_COLUMNS * CELL_WIDTH;
+    canvas.height = ROWS * CELL_HEIGHT;
+    const context = canvas.getContext("2d");
+    if (!context) return undefined;
 
-    function drawPortrait() {
-      const sample = document.createElement("canvas");
-      sample.width = COLUMNS;
-      sample.height = ROWS;
+    const styles = getComputedStyle(canvas);
+    const createFrame = createRobotFrame({
+      slate: styles.getPropertyValue("--slate").trim() || "#d9e2e7",
+      sand: styles.getPropertyValue("--sand").trim() || "#dbd7c8",
+      caramel: styles.getPropertyValue("--caramel").trim() || "#b6815b",
+      ink: "#806453",
+    });
+    const motionPreference = window.matchMedia("(prefers-reduced-motion: reduce)");
 
-      const sampleContext = sample.getContext("2d", { willReadFrequently: true });
-      if (!sampleContext) return;
+    context.font = '14px "DM Mono", monospace';
+    context.textAlign = "center";
+    context.textBaseline = "middle";
 
-      const scale = Math.min(COLUMNS / image.naturalWidth, ROWS / image.naturalHeight);
-      const width = image.naturalWidth * scale;
-      const height = image.naturalHeight * scale;
-      sampleContext.drawImage(image, (COLUMNS - width) / 2, (ROWS - height) / 2, width, height);
+    let animationFrame = 0;
+    let previousFrame = 0;
+    let startTime = null;
+    let isActive = true;
 
-      const pixels = sampleContext.getImageData(0, 0, COLUMNS, ROWS).data;
-      const styles = getComputedStyle(canvas);
-      const slate = styles.getPropertyValue("--slate").trim();
-      const sand = styles.getPropertyValue("--sand").trim();
-      const caramel = styles.getPropertyValue("--caramel").trim();
-
-      canvas.width = COLUMNS * CELL_SIZE;
-      canvas.height = ROWS * CELL_SIZE;
+    function draw(timeSeconds) {
+      const frame = createFrame(timeSeconds);
       context.clearRect(0, 0, canvas.width, canvas.height);
-      context.font = `600 14px "DM Mono", monospace`;
-      context.textAlign = "center";
-      context.textBaseline = "middle";
 
-      for (let row = 0; row < ROWS; row += 1) {
-        for (let column = 0; column < COLUMNS; column += 1) {
-          const offset = (row * COLUMNS + column) * 4;
-          const alpha = pixels[offset + 3] / 255;
-          if (alpha < 0.18) continue;
-
-          const luminance = pixels[offset] * 0.2126 + pixels[offset + 1] * 0.7152 + pixels[offset + 2] * 0.0722;
-          context.globalAlpha = Math.min(0.9, alpha * 0.92);
-          context.fillStyle = luminance > 165 ? slate : luminance > 72 ? sand : caramel;
-          context.fillText(luminance > 72 ? "+" : "·", column * CELL_SIZE + CELL_SIZE / 2, row * CELL_SIZE + CELL_SIZE / 2);
+      for (let y = 0; y < ROWS; y += 1) {
+        for (let x = CROP_LEFT; x < CROP_LEFT + CROP_COLUMNS; x += 1) {
+          const [character, color] = frame[y * COLUMNS + x];
+          if (character === " ") continue;
+          context.fillStyle = color;
+          context.fillText(character, (x - CROP_LEFT) * CELL_WIDTH + CELL_WIDTH / 2, y * CELL_HEIGHT + CELL_HEIGHT / 2);
         }
       }
-
-      context.globalAlpha = 1;
     }
 
-    image.addEventListener("load", drawPortrait, { once: true });
-    image.src = src;
-    if (image.complete && image.naturalWidth > 0) drawPortrait();
+    function animate(timestamp) {
+      if (!isActive || motionPreference.matches) return;
+      if (startTime === null) startTime = timestamp;
+      if (timestamp - previousFrame >= FRAME_INTERVAL) {
+        previousFrame = timestamp;
+        draw((timestamp - startTime) / 1000);
+      }
+      animationFrame = window.requestAnimationFrame(animate);
+    }
 
-    return () => image.removeEventListener("load", drawPortrait);
-  }, [src]);
+    function handleMotionPreferenceChange() {
+      window.cancelAnimationFrame(animationFrame);
+      if (motionPreference.matches) {
+        startTime = null;
+        draw(0);
+      } else {
+        animationFrame = window.requestAnimationFrame(animate);
+      }
+    }
+
+    draw(0);
+    if (!motionPreference.matches) animationFrame = window.requestAnimationFrame(animate);
+    motionPreference.addEventListener("change", handleMotionPreferenceChange);
+
+    return () => {
+      isActive = false;
+      window.cancelAnimationFrame(animationFrame);
+      motionPreference.removeEventListener("change", handleMotionPreferenceChange);
+    };
+  }, []);
 
   return (
-    <span className={`ascii-portrait ${className}`.trim()} aria-hidden="true">
-      <canvas ref={canvasRef} width={COLUMNS * CELL_SIZE} height={ROWS * CELL_SIZE} />
-      <svg className="ascii-portrait-orbit" viewBox="0 0 80 100" preserveAspectRatio="none" focusable="false">
-        <defs>
-          <linearGradient id="ascii-portrait-orbit-gradient" x1="0%" y1="100%" x2="100%" y2="0%">
-            <stop className="ascii-orbit-caramel" offset="0%" />
-            <stop className="ascii-orbit-sand" offset="52%" />
-            <stop className="ascii-orbit-slate" offset="100%" />
-          </linearGradient>
-        </defs>
-        <rect className="ascii-orbit-track" x="2" y="2" width="76" height="96" rx="9" pathLength="100" />
-        <rect className="ascii-orbit-light" x="2" y="2" width="76" height="96" rx="9" pathLength="100" />
-      </svg>
+    <span className={"ascii-portrait " + className} aria-hidden="true">
+      <canvas ref={canvasRef} width={CROP_COLUMNS * CELL_WIDTH} height={ROWS * CELL_HEIGHT} />
     </span>
   );
 }

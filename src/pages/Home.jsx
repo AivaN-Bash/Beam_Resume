@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import Arrow from "../components/Arrow";
 import AsciiPortrait from "../components/AsciiPortrait";
+import ViaductTrainScene from "../components/ViaductTrainScene";
 import useBilingualToggle from "../components/useBilingualToggle";
 
 const marqueeItems = [
@@ -45,7 +46,7 @@ export default function Home() {
             <div className="hero-actions">
               <Link className="button" to="/contact">Let’s talk <Arrow /></Link>
               <Link className="text-link" to="/projects">Explore my work <Arrow /></Link>
-              <AsciiPortrait src={portraitSrc} className="hero-ascii" />
+              <AsciiPortrait className="hero-ascii" />
             </div>
           </div>
 
@@ -85,10 +86,16 @@ export default function Home() {
 
       <section className="statement section">
         <div className="section-label">01 / PROFILE</div>
-        <div>
-          <h2>Customer service experience with a <em>technical mindset.</em></h2>
-          <p className="large-copy">I have worked with customers in the United States and Thailand, and studied Computer Science at ABAC. I am comfortable explaining a process, keeping track of details, and learning the software behind the work.</p>
-          <Link className="text-link" to="/about">Read my story <Arrow/></Link>
+        <div className="statement-layout">
+          <div className="statement-copy">
+            <h2>Customer service experience with a <em>technical mindset.</em></h2>
+            <p className="large-copy">I have worked with customers in the United States and Thailand, and studied Computer Science at ABAC. I am comfortable explaining a process, keeping track of details, and learning the software behind the work.</p>
+            <Link className="text-link" to="/about">Read my story <Arrow/></Link>
+          </div>
+          <figure className="statement-art">
+            <ViaductTrainScene />
+            <figcaption><span>VIADUCT STUDY / 01</span><span>STEAM · STONE</span></figcaption>
+          </figure>
         </div>
       </section>
 
