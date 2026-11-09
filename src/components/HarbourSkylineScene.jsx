@@ -59,5 +59,5 @@ export default function HarbourSkylineScene() {
     }, { frameInterval: FRAME_INTERVAL, threshold: 0.05 });
   }, []);
 
-  return <canvas ref={canvasRef} className="hero-skyline-canvas" aria-hidden="true" />;
+  return <canvas ref={canvasRef} className="hero-skyline-canvas" data-scroll-parallax="34" aria-hidden="true" />;
 }

@@ -23,6 +23,8 @@ The visual system uses an ink and slate base, warm copper accents, editorial dis
 
 Canvas scenes share one lifecycle manager. It starts scenes near the viewport, pauses them offscreen, during page scrolling, and when the tab is hidden, respects reduced-motion preferences, and releases animation and observer resources on cleanup. The ASCII painter updates changed cells in small batches.
 
+The homepage layers its ASCII skyline, oversized name, and portrait at different scroll speeds. Supporting copy stays steady for readability; the movement is reduced on smaller screens and disabled when reduced motion is requested. The effect uses native scrolling and adds no animation dependency.
+
 ## Run locally
 
 ```bash

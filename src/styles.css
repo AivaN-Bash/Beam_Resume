@@ -105,7 +105,8 @@ a { color: inherit; text-decoration: none; }
 .hero { position: relative; isolation: isolate; overflow: hidden; min-height: clamp(680px, calc(100svh - 84px), 900px); margin: 0 -5vw; padding: clamp(var(--space-4), 4vw, var(--space-5)) 5vw clamp(var(--space-5), 6vh, var(--space-6)); display: flex; flex-direction: column; justify-content: space-between; border-bottom: 1px solid var(--line); background: var(--paper); }
 .hero::before { position: absolute; z-index: -1; inset: 0; background: radial-gradient(ellipse at 78% 48%, color-mix(in srgb, var(--caramel) 12%, transparent), transparent 48%); content: ""; pointer-events: none; }
 .hero::after { position: absolute; z-index: 0; inset: 0; background: linear-gradient(90deg, var(--paper) 0%, color-mix(in srgb, var(--paper) 92%, transparent) 26%, color-mix(in srgb, var(--paper) 65%, transparent) 52%, color-mix(in srgb, var(--paper) 18%, transparent) 100%), linear-gradient(0deg, color-mix(in srgb, var(--paper) 45%, transparent), transparent 26%, transparent 78%, color-mix(in srgb, var(--paper) 34%, transparent)); content: ""; pointer-events: none; }
-.hero-skyline-canvas { position: absolute; z-index: 0; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 52%; opacity: .25; filter: saturate(.62); pointer-events: none; }
+.hero-skyline-canvas { position: absolute; z-index: 0; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 52%; opacity: .29; filter: saturate(.68); pointer-events: none; }
+.hero-skyline-canvas[data-scroll-parallax], .hero-heading-layer[data-scroll-parallax], .hero-portrait img[data-scroll-parallax] { transform: translate3d(0, var(--scroll-parallax-y, 0px), 0); }
 .hero-topline { position: relative; z-index: 2; display: flex; justify-content: space-between; align-items: center; gap: var(--space-3); }
 .hero-status { display: inline-flex; align-items: center; gap: 9px; color: var(--muted); font: 9px 'DM Mono', monospace; letter-spacing: .1em; text-transform: uppercase; }
 .hero-status i { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 12px color-mix(in srgb, var(--accent) 52%, transparent); }
@@ -113,7 +114,7 @@ a { color: inherit; text-decoration: none; }
 .hero-copy { position: relative; z-index: 2; padding: var(--space-5) 0 var(--space-3); }
 .hero-greeting { margin-bottom: 1.6rem; color: var(--accent); font: 10px 'DM Mono', monospace; letter-spacing: .12em; }
 .hero-greeting span { color: var(--sand); padding: 0 4px; }
-.hero-intro { display: grid; grid-template-columns: minmax(0, 1fr) minmax(210px, .88fr); align-items: end; gap: clamp(var(--space-3), 2.5vw, var(--space-4)); margin-top: var(--space-4); }
+.hero-intro { display: grid; grid-template-columns: minmax(0, 1fr) minmax(210px, .88fr); align-items: end; gap: clamp(var(--space-3), 2.5vw, var(--space-4)); margin-top: clamp(42px, 4.2vw, 55px); }
 .hero-portrait { position: relative; isolation: isolate; align-self: stretch; min-height: clamp(440px, 62vh, 660px); margin: -2rem -5vw -3rem 0; padding-bottom: 34px; display: grid; justify-items: center; align-items: end; overflow: hidden; background: radial-gradient(ellipse at 56% 58%, color-mix(in srgb, var(--caramel) 13%, transparent), transparent 68%); }
 .hero-portrait::before { position: absolute; z-index: 0; inset: 0; background: radial-gradient(ellipse at 56% 58%, color-mix(in srgb, var(--caramel) 13%, transparent), transparent 68%); content: ""; pointer-events: none; }
 .hero-portrait img { position: absolute; z-index: 1; inset: 0 0 34px; width: 100%; height: calc(100% - 34px); object-fit: contain; object-position: center bottom; filter: drop-shadow(0 18px 36px rgb(1 4 14 / 44%)); }
@@ -349,7 +350,7 @@ blockquote, .quote { max-width: 800px; margin: 0 0 0 21%; padding: var(--space-6
   .hero-note { max-width: 520px; }
   .hero-actions { margin-top: var(--space-3); }
   .hero-portrait { height: clamp(280px, 78vw, 400px); min-height: 0; margin: .25rem -5vw -1rem; }
-  .hero-skyline-canvas { object-position: 54% center; opacity: .16; }
+  .hero-skyline-canvas { object-position: 54% center; opacity: .2; }
   .hero-portrait figcaption { right: 5vw; left: 5vw; }
   .name-option-thai { font-size: .76em; }
   .statement, .split, .timeline-item, .skills-note, .contact-grid { grid-template-columns: 1fr; gap: clamp(var(--space-3), 6vw, var(--space-4)); }
@@ -422,6 +423,7 @@ blockquote, .quote { max-width: 800px; margin: 0 0 0 21%; padding: var(--space-6
 
 @media (prefers-reduced-motion: reduce) {
   * { scroll-behavior: auto !important; transition: none !important; animation: none !important; }
+  .hero-skyline-canvas[data-scroll-parallax], .hero-heading-layer[data-scroll-parallax], .hero-portrait img[data-scroll-parallax] { transform: none !important; }
   .marquee-track { width: 100%; transform: none; }
   .marquee-group { flex: 1 1 auto; min-width: 0; flex-wrap: wrap; justify-content: flex-start; padding: 0; }
   .marquee-group + .marquee-group { display: none; }

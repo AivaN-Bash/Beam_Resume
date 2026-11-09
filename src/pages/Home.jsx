@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import Arrow from "../components/Arrow";
 import AsciiPortrait from "../components/AsciiPortrait";
 import HarbourSkylineScene from "../components/HarbourSkylineScene";
 import ViaductTrainScene from "../components/ViaductTrainScene";
 import useBilingualToggle from "../components/useBilingualToggle";
+import useScrollParallax from "../components/useScrollParallax";
 
 const marqueeItems = [
   "Customer service",
@@ -18,13 +19,15 @@ const marqueeItems = [
 ];
 
 export default function Home() {
+  const heroRef = useRef(null);
   const [showThaiName, pauseHandlers] = useBilingualToggle();
   const [portraitFailed, setPortraitFailed] = useState(false);
   const portraitSrc = `${import.meta.env.BASE_URL}images/phawat-cutout.png`;
+  useScrollParallax(heroRef);
 
   return (
     <div className="page home">
-      <section className="hero">
+      <section className="hero" ref={heroRef}>
         <HarbourSkylineScene />
         <div className="hero-topline">
           <div className="eyebrow">PORTFOLIO / {new Date().getFullYear()}</div>
@@ -34,10 +37,12 @@ export default function Home() {
         <div className="hero-layout">
           <div className="hero-copy">
             <p className="hero-greeting">CUSTOMER SERVICE / COMPUTER SCIENCE</p>
-            <h1 className={`hero-name${showThaiName ? " show-thai" : ""}`} {...pauseHandlers}>
-              <span className="name-option name-option-english" aria-hidden={showThaiName}>PHAWAT<br/><em>TANAJIRANON</em></span>
-              <span className="name-option name-option-thai" lang="th" aria-hidden={!showThaiName}>ภวัต<br/><span>ธนาจิรานนท์</span></span>
-            </h1>
+            <div className="hero-heading-layer" data-scroll-parallax="20">
+              <h1 className={`hero-name${showThaiName ? " show-thai" : ""}`} {...pauseHandlers}>
+                <span className="name-option name-option-english" aria-hidden={showThaiName}>PHAWAT<br/><em>TANAJIRANON</em></span>
+                <span className="name-option name-option-thai" lang="th" aria-hidden={!showThaiName}>ภวัต<br/><span>ธนาจิรานนท์</span></span>
+              </h1>
+            </div>
             <div className="hero-intro">
               <p className="hero-lead">Customer service experience.<br/>A Computer Science foundation.</p>
               <div className="hero-note">
@@ -59,6 +64,7 @@ export default function Home() {
                 alt="Phawat in graduation attire"
                 width="512"
                 height="512"
+                data-scroll-parallax="7"
                 loading="eager"
                 fetchPriority="high"
                 decoding="async"

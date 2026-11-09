@@ -61,6 +61,26 @@ test("mobile navigation opens, closes with Escape, and restores focus", async ({
   await expect(page.getByRole("button", { name: "Open navigation" })).toBeFocused();
 });
 
+test("home parallax uses the existing portrait and skyline with a smaller phone range", async ({ page }) => {
+  const portrait = page.locator(".hero-portrait img[data-scroll-parallax]");
+  await page.setViewportSize({ width: 1440, height: 960 });
+  await page.goto("", { waitUntil: "domcontentloaded" });
+  await expect(portrait).toBeVisible();
+  await page.evaluate(() => { document.scrollingElement.scrollTop = 550; });
+
+  const readOffset = () => portrait.evaluate((element) => Number.parseFloat(
+    getComputedStyle(element).getPropertyValue("--scroll-parallax-y"),
+  ));
+  await expect.poll(readOffset).toBeGreaterThan(5);
+  const desktopOffset = await readOffset();
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.evaluate(() => { document.scrollingElement.scrollTop = 0; });
+  await page.evaluate(() => { document.scrollingElement.scrollTop = 550; });
+  await expect.poll(readOffset).toBeGreaterThan(0);
+  expect(await readOffset()).toBeLessThan(desktopOffset);
+});
+
 test("reduced-motion mode renders a still canvas scene without starting its frame loop", async ({ page }) => {
   await page.addInitScript(() => {
     const originalFillText = CanvasRenderingContext2D.prototype.fillText;
@@ -80,6 +100,7 @@ test("reduced-motion mode renders a still canvas scene without starting its fram
   await page.goto("", { waitUntil: "domcontentloaded" });
   await expect.poll(() => page.evaluate(() => matchMedia("(prefers-reduced-motion: reduce)").matches)).toBe(true);
   await expect(page.locator(".hero-skyline-canvas")).toBeVisible();
+  await expect(page.locator(".hero-portrait img")).toHaveCSS("transform", "none");
   await expect.poll(() => page.evaluate(() => window.__canvasTextPaints)).toBeGreaterThan(0);
   await page.waitForTimeout(1000);
   const activity = await page.evaluate(() => ({
