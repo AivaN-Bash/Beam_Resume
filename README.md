@@ -1,57 +1,64 @@
-# Phawat Tanajiranon Portfolio
+# Phawat Tanajiranon — Portfolio
 
-A responsive portfolio for Phawat Tanajiranon. It presents customer service and hospitality experience, Computer Science studies, personal software projects, practical skills, and contact information.
+This is Phawat’s personal portfolio website. It introduces his customer service experience, Computer Science studies, projects, skills, and contact details. The site is designed to work on phones, tablets, and computers.
 
-The visual system uses an ink and slate base, warm copper accents, editorial display typography, and small animated ASCII scenes. It is designed for desktop, tablet, and phone screens.
+## View the website
 
-## Pages
+**Live website:** [aivan-bash.github.io/Beam_Resume](https://aivan-bash.github.io/Beam_Resume/)
 
-- **Home:** introduction, portrait, availability, and section links.
-- **About:** study and work history, background, and personal statement.
-- **Experience:** Computer Science study, Dollywood rental and retail work, and restaurant service.
-- **Projects:** chess, TipBeam, and this portfolio.
-- **Skills:** customer service, technical, office, and communication skills.
-- **Contact:** role interests and ways to get in touch.
+## What’s on the site
 
-## Technology
+- **Home** — A short introduction and links to the rest of the site.
+- **About** — Background, studies, and work experience.
+- **Experience** — Education and previous jobs.
+- **Projects** — A few things Phawat has made, with links to try them or see their source.
+- **Skills** — Customer service, computer, office, and communication skills.
+- **Contact** — How to get in touch about work.
 
-- React 19 and React Router
-- Vite 7
-- Canvas-rendered ASCII illustrations
-- CSS responsive layouts and reduced-motion support
-- GitHub Pages deployment through GitHub Actions
+## Run it on your computer
 
-Canvas scenes share one lifecycle manager. It starts scenes near the viewport, pauses them offscreen, during page scrolling, and when the tab is hidden, respects reduced-motion preferences, and releases animation and observer resources on cleanup. The ASCII painter updates changed cells in small batches.
+This is optional. It lets you preview changes before the website is published.
 
-The homepage layers its ASCII skyline, oversized name, and portrait at different scroll speeds. Supporting copy stays steady for readability; the movement is reduced on smaller screens and disabled when reduced motion is requested. The effect uses native scrolling and adds no animation dependency.
+1. Install [Node.js](https://nodejs.org/) (the **LTS** version).
+2. Open this project folder in a terminal. In VS Code, choose **Terminal → New Terminal**.
+3. Run these commands one at a time:
 
-## Run locally
+   ```sh
+   npm ci
+   npm run dev
+   ```
 
-```bash
-npm ci
-npm run dev
+4. Open the local address shown in the terminal. It is usually [http://localhost:5174](http://localhost:5174).
+5. To stop the preview, click the terminal and press **Ctrl+C**.
+
+## Update the website’s words and links
+
+Most portfolio details are kept together in `src/data/portfolio.js`:
+
+- Change the project descriptions, buttons, and links in the `projects` list.
+- Change the skill names in the `skillGroups` list.
+- Change page titles and search descriptions in the `pageMetadata` list.
+- Change the navigation labels in the `nav` list.
+
+The longer introduction and work history are written in the page files inside `src/pages/`. For example, the home page is `src/pages/Home.jsx`. The portrait image is `public/images/phawat-cutout.png`.
+
+Save a file and the local preview should update automatically. If a change looks wrong, undo it with **Ctrl+Z** or restore the original text.
+
+## Publish changes
+
+The site is published with GitHub Pages. When changes are pushed to the `main` branch, GitHub automatically builds the site, checks that its pages work on different screen sizes, and publishes it. Publishing requires access to this project’s GitHub repository.
+
+## For contributors
+
+The site uses React 19, React Router, and Vite. Its small canvas illustrations share a lifecycle manager that pauses scenes when they are offscreen or the browser tab is hidden, and follows the visitor’s reduced-motion preference. The homepage also uses native scrolling for its gentle parallax effect.
+
+Useful commands:
+
+```sh
+npm run dev       # Start the local preview
+npm run build     # Create the production site in dist/
+npm run preview   # Preview the production build locally
+npm run test:e2e  # Check routes, layouts, navigation, and accessibility
 ```
 
-Vite serves the site at `http://localhost:5174`. The default server is local to this computer. Run `npm run dev:lan` only when you want to preview from another device on your local network.
-
-## Build and verify
-
-```bash
-npm run build
-npm run test:e2e
-npm audit --omit=dev --audit-level=high
-```
-
-The browser checks exercise all pages at phone, tablet, and desktop widths; check direct route loads and page metadata; verify the mobile navigation; and run automated WCAG 2.1 A/AA checks. They use the production build through Vite Preview and require Chromium (`npx playwright install chromium`).
-
-The dependency audit covers production dependencies only because GitHub Pages serves the built static files, not the development and build tools.
-
-The build creates static route entry points with page-specific title, description, canonical, Open Graph, and Twitter metadata. It also creates `dist/404.html` so GitHub Pages can serve client-side routes on direct visits and refreshes.
-
-## Deployment
-
-Pushing to `main` runs the production dependency audit, production build, Chromium browser checks, and GitHub Pages deployment.
-
-**Live site:** https://aivan-bash.github.io/Beam_Resume/
-
-The workflow is in `.github/workflows/deploy.yml`. GitHub Pages controls the site's HTTP response headers; the repository cannot configure arbitrary headers such as `Content-Security-Policy` or `X-Frame-Options` at the server level. The page includes a restrictive CSP meta policy for browser resource loading, but a meta policy cannot provide every response-header directive. Use a host or edge service with header configuration if those additional controls become a requirement.
+The browser checks use Playwright and Chromium. Install Chromium once with `npx playwright install chromium`. GitHub Pages serves the built static files; the deployment workflow also checks production dependencies with `npm audit`.

@@ -10,16 +10,16 @@ export const projects = [
   {
     title: "Watt Wise",
     tag: "LIVE WEB APP",
-    desc: "Estimate your electricity bill from appliance usage, then try the built-in device mockup tester to preview the app on phone, tablet, and desktop screens.",
-    stack: ["Electricity bill calculator", "Appliance estimates", "Device mockup tester"],
+    desc: "Estimate a home electricity bill by choosing common appliances and how long you use them. The site also lets you preview the calculator on phone, tablet, and desktop screen sizes.",
+    stack: ["Electricity bill calculator", "Appliance estimates", "Phone and desktop previews"],
     url: "https://aivan-bash.github.io/Watt-Wise/",
     action: "Try the calculator and mockup tester",
   },
   {
     title: "Simple Chess",
     tag: "DESKTOP + WEB",
-    desc: "A chess project with two separate versions that share the same look: a Java Swing desktop app for Windows and a React browser app. Both support local two-player and computer matches, legal move highlighting, check, checkmate, stalemate, captured pieces, castling, en passant, and pawn promotion. The desktop app can open the live web version, while the browser version supports drag or click-to-move play and fixed board flipping.",
-    stack: ["Java", "Swing", "React", "Chess bot", "Rule engines"],
+    desc: "Play chess against a friend or the computer in either a Windows desktop app or a browser version. Both versions handle standard chess rules, show available moves, and detect checkmate; the browser game also lets you drag or click pieces to move them.",
+    stack: ["Windows and browser versions", "Play with a friend or computer", "Full chess rules"],
     url: "https://github.com/AivaN-Bash/simple_chess_java",
     action: "View source on GitHub",
     demoUrl: "https://aivan-bash.github.io/simple_chess_java/",
@@ -28,8 +28,8 @@ export const projects = [
   {
     title: "TipBeam",
     tag: "PERSONAL PROJECT",
-    desc: "A tipping page for Thai streamers that creates PromptPay QR codes and sends donation alerts to a browser overlay in OBS.",
-    stack: ["TypeScript", "PromptPay API", "OBS overlay"],
+    desc: "A tipping page for Thai livestreamers. Viewers can send a tip with a PromptPay QR code, and the streamer can show a notification over their broadcast.",
+    stack: ["PromptPay tips", "Livestream alerts", "OBS broadcasting tool"],
   },
   {
     title: "This Portfolio",
