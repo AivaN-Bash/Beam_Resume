@@ -26,10 +26,12 @@ export const projects = [
     demoAction: "View website version",
   },
   {
-    title: "TipBeam",
-    tag: "PERSONAL PROJECT",
-    desc: "A tipping page for Thai livestreamers. Viewers can send a tip with a PromptPay QR code, and the streamer can show a notification over their broadcast.",
-    stack: ["PromptPay tips", "Livestream alerts", "OBS broadcasting tool"],
+    title: "Val Analyst",
+    tag: "LIVE WEB APP",
+    desc: "An evidence-first VALORANT player analyzer that runs entirely in your browser. Enter a recent match sample and answer 30 tactical questions to review seven performance dimensions, behavioral tendencies, and their supporting evidence. Formulas, sample limits, and missing data stay visible; analysis snapshots are saved only in this browser. Includes a VCT Reference link for professional match research.",
+    stack: ["30 tactical questions", "7 performance dimensions", "Browser-only analysis", "VCT research reference"],
+    url: "https://aivan-bash.github.io/Val_-Analyst/",
+    action: "View web app",
   },
   {
     title: "This Portfolio",
@@ -61,7 +63,7 @@ export const pageMetadata = {
   },
   "/projects": {
     title: "Projects — Phawat Tanajiranon",
-    description: "Personal software projects in electricity cost estimation, Java chess, streaming tools, and web development.",
+    description: "Personal software projects in electricity cost estimation, Java chess, VALORANT analysis, and web development.",
   },
   "/skills": {
     title: "Skills — Phawat Tanajiranon",

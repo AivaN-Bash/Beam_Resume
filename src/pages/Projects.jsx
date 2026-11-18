@@ -3,13 +3,13 @@ import CalculatorAppScene from "../components/CalculatorAppScene";
 import ChessReplayScene from "../components/ChessReplayScene";
 import Page from "../components/Page";
 import PortfolioMarqueeScene from "../components/PortfolioMarqueeScene";
-import TipBeamFlowScene from "../components/TipBeamFlowScene";
+import ValAnalystScene from "../components/ValAnalystScene";
 import { projects } from "../data/portfolio";
 
 const PROJECT_ART = {
   "Watt Wise": { Scene: CalculatorAppScene, caption: "BILL ESTIMATE / THB", detail: "KEYPAD / MOCKUP" },
   "Simple Chess": { Scene: ChessReplayScene, caption: "JAVA + REACT", detail: "DESKTOP / WEB" },
-  TipBeam: { Scene: TipBeamFlowScene, caption: "PROMPTPAY / DONATION", detail: "ALERT TO OBS" },
+  "Val Analyst": { Scene: ValAnalystScene, caption: "30 QUESTIONS / 7 DIMENSIONS", detail: "EVIDENCE / LOCAL ONLY" },
   "This Portfolio": { Scene: PortfolioMarqueeScene, caption: "REACT + VITE", detail: "PERSONAL PORTFOLIO" },
 };
 
