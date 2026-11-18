@@ -39,16 +39,18 @@ Vite serves the site at `http://localhost:5174`. The default server is local to 
 ```bash
 npm run build
 npm run test:e2e
-npm audit --audit-level=high
+npm audit --omit=dev --audit-level=high
 ```
 
 The browser checks exercise all pages at phone, tablet, and desktop widths; check direct route loads and page metadata; verify the mobile navigation; and run automated WCAG 2.1 A/AA checks. They use the production build through Vite Preview and require Chromium (`npx playwright install chromium`).
+
+The dependency audit covers production dependencies only because GitHub Pages serves the built static files, not the development and build tools.
 
 The build creates static route entry points with page-specific title, description, canonical, Open Graph, and Twitter metadata. It also creates `dist/404.html` so GitHub Pages can serve client-side routes on direct visits and refreshes.
 
 ## Deployment
 
-Pushing to `main` runs the dependency audit, production build, Chromium browser checks, and GitHub Pages deployment.
+Pushing to `main` runs the production dependency audit, production build, Chromium browser checks, and GitHub Pages deployment.
 
 **Live site:** https://aivan-bash.github.io/Beam_Resume/
 
