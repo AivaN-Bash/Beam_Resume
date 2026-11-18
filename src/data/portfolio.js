@@ -22,6 +22,8 @@ export const projects = [
     stack: ["Java", "Swing", "Chess bot", "Rule engine"],
     url: "https://github.com/AivaN-Bash/simple_chess_java",
     action: "View source on GitHub",
+    demoUrl: "https://aivan-bash.github.io/simple_chess_java/",
+    demoAction: "View website version",
   },
   {
     title: "TipBeam",

@@ -26,7 +26,10 @@ export default function Projects() {
               <div className="project-copy">
                 <h2>{p.title}</h2>
                 <p>{p.desc}</p>
-                {p.url && <a className="text-link project-demo-link" href={p.url} target="_blank" rel="noopener noreferrer">{p.action} <Arrow /></a>}
+                {(p.demoUrl || p.url) && <div className="project-links">
+                  {p.demoUrl && <a className="text-link project-demo-link" href={p.demoUrl} target="_blank" rel="noopener noreferrer">{p.demoAction || "View website"} <Arrow /></a>}
+                  {p.url && <a className="text-link project-demo-link" href={p.url} target="_blank" rel="noopener noreferrer">{p.action} <Arrow /></a>}
+                </div>}
                 <div className="tag-row">{p.stack.map((s) => <span className="skill-pill" key={s}>{s}</span>)}</div>
               </div>
               {Scene && <figure className="project-art-figure">
