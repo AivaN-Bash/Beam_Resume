@@ -1,4 +1,5 @@
 import Arrow from "../components/Arrow";
+import CalculatorAppScene from "../components/CalculatorAppScene";
 import ChessReplayScene from "../components/ChessReplayScene";
 import Page from "../components/Page";
 import PortfolioMarqueeScene from "../components/PortfolioMarqueeScene";
@@ -6,7 +7,8 @@ import TipBeamFlowScene from "../components/TipBeamFlowScene";
 import { projects } from "../data/portfolio";
 
 const PROJECT_ART = {
-  "Two-Player Chess Engine": { Scene: ChessReplayScene, caption: "OPERA GAME / 1858", detail: "MOVE BY MOVE" },
+  "Watt Wise": { Scene: CalculatorAppScene, caption: "BILL ESTIMATE / THB", detail: "KEYPAD / MOCKUP" },
+  "Simple Chess": { Scene: ChessReplayScene, caption: "JAVA CHESS / LOCAL", detail: "PLAYER / COMPUTER" },
   TipBeam: { Scene: TipBeamFlowScene, caption: "PROMPTPAY / DONATION", detail: "ALERT TO OBS" },
   "This Portfolio": { Scene: PortfolioMarqueeScene, caption: "REACT + VITE", detail: "PERSONAL PORTFOLIO" },
 };
@@ -24,6 +26,7 @@ export default function Projects() {
               <div className="project-copy">
                 <h2>{p.title}</h2>
                 <p>{p.desc}</p>
+                {p.url && <a className="text-link project-demo-link" href={p.url} target="_blank" rel="noopener noreferrer">{p.action} <Arrow /></a>}
                 <div className="tag-row">{p.stack.map((s) => <span className="skill-pill" key={s}>{s}</span>)}</div>
               </div>
               {Scene && <figure className="project-art-figure">

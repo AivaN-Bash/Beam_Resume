@@ -8,10 +8,20 @@ export const nav = [
 
 export const projects = [
   {
-    title: "Two-Player Chess Engine",
+    title: "Watt Wise",
+    tag: "LIVE WEB APP",
+    desc: "Estimate your electricity bill from appliance usage, then try the built-in device mockup tester to preview the app on phone, tablet, and desktop screens.",
+    stack: ["Electricity bill calculator", "Appliance estimates", "Device mockup tester"],
+    url: "https://aivan-bash.github.io/Watt-Wise/",
+    action: "Try the calculator and mockup tester",
+  },
+  {
+    title: "Simple Chess",
     tag: "PERSONAL PROJECT",
-    desc: "A two-player chess engine in C++ and SFML. It generates legal moves, uses perft checks, animates pieces, and can flip the board for local play.",
-    stack: ["C++", "SFML", "Perft testing"],
+    desc: "A Java Swing chess app for local two-player or computer matches. ChessGame keeps the rules independent of Swing, ChessBoardPanel renders the board, and ChessBot chooses computer moves. Supports check, checkmate, stalemate, castling, en passant, and pawn promotion.",
+    stack: ["Java", "Swing", "Chess bot", "Rule engine"],
+    url: "https://github.com/AivaN-Bash/simple_chess_java",
+    action: "View source on GitHub",
   },
   {
     title: "TipBeam",
@@ -49,7 +59,7 @@ export const pageMetadata = {
   },
   "/projects": {
     title: "Projects — Phawat Tanajiranon",
-    description: "Personal software projects in chess, streaming tools, and web development.",
+    description: "Personal software projects in electricity cost estimation, Java chess, streaming tools, and web development.",
   },
   "/skills": {
     title: "Skills — Phawat Tanajiranon",

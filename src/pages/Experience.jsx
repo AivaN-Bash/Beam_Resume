@@ -10,7 +10,10 @@ export default function Experience() {
         <div className="time">2021 — 2023<br/><small>ABAC · BANGNA</small></div>
         <div className="timeline-entry-grid">
           <div className="timeline-entry-copy"><h2>Computer Science</h2><p>Studied at Assumption University for three years. Coursework included programming fundamentals and problem solving.</p><span className="tag">EDUCATION</span></div>
-          <figure className="timeline-illustration"><CodeEditorScene /></figure>
+          <figure className="timeline-illustration timeline-illustration-code">
+            <CodeEditorScene />
+            <figcaption><span>CODE STUDY / 01</span><span>RATE LIMITER / TYPESCRIPT</span></figcaption>
+          </figure>
         </div>
       </div>
       <div className="timeline-item">

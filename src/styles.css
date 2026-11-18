@@ -255,14 +255,16 @@ blockquote, .quote { max-width: 800px; margin: 0 0 0 21%; padding: var(--space-6
 .timeline-entry-grid { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(320px, .95fr); align-items: center; gap: clamp(var(--space-3), 3vw, var(--space-5)); min-width: 0; }
 .timeline-entry-copy { min-width: 0; }
 .timeline-illustration { width: 100%; max-width: 580px; min-width: 0; justify-self: end; margin: 0; }
+.timeline-illustration-code { padding: clamp(10px, 1.7vw, 18px); border: 1px solid color-mix(in srgb, var(--caramel) 36%, var(--line)); background: linear-gradient(145deg, color-mix(in srgb, var(--surface-warm) 82%, var(--paper)), var(--surface)); }
 .code-editor-canvas, .golden-gate-canvas, .neon-city-canvas { display: block; width: 100%; height: auto; opacity: .94; }
 .golden-gate-canvas, .neon-city-canvas { -webkit-mask-image: radial-gradient(ellipse at 52% 52%, #000 50%, rgb(0 0 0 / .88) 75%, transparent 100%); mask-image: radial-gradient(ellipse at 52% 52%, #000 50%, rgb(0 0 0 / .88) 75%, transparent 100%); }
 .timeline-illustration-flipped .golden-gate-canvas { transform: scaleX(-1); }
 .timeline-illustration figcaption { display: flex; justify-content: space-between; gap: 12px; margin-top: 7px; padding-top: 9px; border-top: 1px solid var(--line); color: var(--muted); font: 9px 'DM Mono', monospace; letter-spacing: .09em; text-transform: uppercase; }
 .project-content-featured { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, .95fr); align-items: center; gap: clamp(var(--space-3), 3vw, var(--space-5)); min-width: 0; }
 .project-copy { min-width: 0; }
+.project-demo-link { display: inline-flex; align-items: center; gap: 8px; margin: 2px 0 16px; color: var(--accent); }
 .project-art-figure { width: 100%; max-width: 580px; min-width: 0; justify-self: end; margin: 0; }
-.chess-replay-canvas, .tipbeam-flow-canvas, .portfolio-marquee-canvas { display: block; width: 100%; height: auto; }
+.chess-replay-canvas, .tipbeam-flow-canvas, .portfolio-marquee-canvas, .calculator-app-canvas { display: block; width: 100%; height: auto; }
 .project-art-figure figcaption { display: flex; justify-content: space-between; gap: 12px; margin-top: 7px; padding-top: 9px; border-top: 1px solid var(--line); color: var(--muted); font: 9px 'DM Mono', monospace; letter-spacing: .09em; text-transform: uppercase; }
 .time { line-height: 1.7; }
 .time small { font-size: 9px; }
