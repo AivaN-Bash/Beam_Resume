@@ -8,7 +8,7 @@ import { projects } from "../data/portfolio";
 
 const PROJECT_ART = {
   "Watt Wise": { Scene: CalculatorAppScene, caption: "BILL ESTIMATE / THB", detail: "KEYPAD / MOCKUP" },
-  "Simple Chess": { Scene: ChessReplayScene, caption: "JAVA CHESS / LOCAL", detail: "PLAYER / COMPUTER" },
+  "Simple Chess": { Scene: ChessReplayScene, caption: "JAVA + REACT", detail: "DESKTOP / WEB" },
   TipBeam: { Scene: TipBeamFlowScene, caption: "PROMPTPAY / DONATION", detail: "ALERT TO OBS" },
   "This Portfolio": { Scene: PortfolioMarqueeScene, caption: "REACT + VITE", detail: "PERSONAL PORTFOLIO" },
 };

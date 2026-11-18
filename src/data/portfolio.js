@@ -17,9 +17,9 @@ export const projects = [
   },
   {
     title: "Simple Chess",
-    tag: "PERSONAL PROJECT",
-    desc: "A Java Swing chess app for local two-player or computer matches. ChessGame keeps the rules independent of Swing, ChessBoardPanel renders the board, and ChessBot chooses computer moves. Supports check, checkmate, stalemate, castling, en passant, and pawn promotion.",
-    stack: ["Java", "Swing", "Chess bot", "Rule engine"],
+    tag: "DESKTOP + WEB",
+    desc: "A chess project with two separate versions that share the same look: a Java Swing desktop app for Windows and a React browser app. Both support local two-player and computer matches, legal move highlighting, check, checkmate, stalemate, captured pieces, castling, en passant, and pawn promotion. The desktop app can open the live web version, while the browser version supports drag or click-to-move play and fixed board flipping.",
+    stack: ["Java", "Swing", "React", "Chess bot", "Rule engines"],
     url: "https://github.com/AivaN-Bash/simple_chess_java",
     action: "View source on GitHub",
     demoUrl: "https://aivan-bash.github.io/simple_chess_java/",
