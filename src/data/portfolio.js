@@ -8,6 +8,16 @@ export const nav = [
 
 export const projects = [
   {
+    title: "Hotel Self Check-in",
+    tag: "LIVE WEB APP",
+    desc: "A bilingual, touch-friendly hotel kiosk for guests to check in, receive a room assignment and demo QR key, or check out an active stay. The React frontend connects to a Spring Boot API and PostgreSQL database; identity checks, deposits, and QR keys are simulations.",
+    stack: ["English and Thai kiosk", "React + Spring Boot", "PostgreSQL", "Check-in and check-out"],
+    url: "https://frontend-nine-kohl-nzqk24mi4s.vercel.app/",
+    action: "Try the hotel kiosk",
+    demoUrl: "https://github.com/AivaN-Bash/Hotel_Checkin",
+    demoAction: "View source on GitHub",
+  },
+  {
     title: "Watt Wise",
     tag: "LIVE WEB APP",
     desc: "Estimate a home electricity bill by choosing common appliances and how long you use them. The site also lets you preview the calculator on phone, tablet, and desktop screen sizes.",
@@ -63,7 +73,7 @@ export const pageMetadata = {
   },
   "/projects": {
     title: "Projects — Phawat Tanajiranon",
-    description: "Personal software projects in electricity cost estimation, Java chess, VALORANT analysis, and web development.",
+    description: "Personal software projects including a bilingual hotel self check-in kiosk, electricity cost estimation, Java chess, and VALORANT analysis.",
   },
   "/skills": {
     title: "Skills — Phawat Tanajiranon",

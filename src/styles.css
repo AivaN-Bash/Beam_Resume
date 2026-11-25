@@ -265,7 +265,7 @@ blockquote, .quote { max-width: 800px; margin: 0 0 0 21%; padding: var(--space-6
 .project-links { display: flex; flex-wrap: wrap; gap: 0 24px; }
 .project-demo-link { display: inline-flex; align-items: center; gap: 8px; margin: 2px 0 16px; color: var(--accent); }
 .project-art-figure { width: 100%; max-width: 580px; min-width: 0; justify-self: end; margin: 0; }
-.chess-replay-canvas, .val-analyst-canvas, .portfolio-marquee-canvas, .calculator-app-canvas { display: block; width: 100%; height: auto; }
+.chess-replay-canvas, .val-analyst-canvas, .portfolio-marquee-canvas, .calculator-app-canvas, .hotel-checkin-canvas { display: block; width: 100%; height: auto; }
 .project-art-figure figcaption { display: flex; justify-content: space-between; gap: 12px; margin-top: 7px; padding-top: 9px; border-top: 1px solid var(--line); color: var(--muted); font: 9px 'DM Mono', monospace; letter-spacing: .09em; text-transform: uppercase; }
 .time { line-height: 1.7; }
 .time small { font-size: 9px; }

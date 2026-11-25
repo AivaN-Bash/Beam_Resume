@@ -1,12 +1,14 @@
 import Arrow from "../components/Arrow";
 import CalculatorAppScene from "../components/CalculatorAppScene";
 import ChessReplayScene from "../components/ChessReplayScene";
+import HotelCheckinScene from "../components/HotelCheckinScene";
 import Page from "../components/Page";
 import PortfolioMarqueeScene from "../components/PortfolioMarqueeScene";
 import ValAnalystScene from "../components/ValAnalystScene";
 import { projects } from "../data/portfolio";
 
 const PROJECT_ART = {
+  "Hotel Self Check-in": { Scene: HotelCheckinScene, caption: "BILINGUAL HOTEL KIOSK", detail: "CHECK-IN / CHECK-OUT" },
   "Watt Wise": { Scene: CalculatorAppScene, caption: "BILL ESTIMATE / THB", detail: "KEYPAD / MOCKUP" },
   "Simple Chess": { Scene: ChessReplayScene, caption: "JAVA + REACT", detail: "DESKTOP / WEB" },
   "Val Analyst": { Scene: ValAnalystScene, caption: "30 QUESTIONS / 7 DIMENSIONS", detail: "EVIDENCE / LOCAL ONLY" },
