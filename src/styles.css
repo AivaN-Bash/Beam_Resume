@@ -1548,7 +1548,7 @@ blockquote, .quote {
   margin: 0;
 }
 
-.chess-replay-canvas, .val-analyst-canvas, .portfolio-marquee-canvas, .calculator-app-canvas, .hotel-checkin-canvas {
+.chess-replay-canvas, .val-analyst-canvas, .portfolio-marquee-canvas, .calculator-app-canvas, .hotel-checkin-canvas, .hall-of-fame-canvas {
   display: block;
   width: 100%;
   height: auto;

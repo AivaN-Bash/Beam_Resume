@@ -1,6 +1,7 @@
 import Arrow from "../components/Arrow";
 import CalculatorAppScene from "../components/CalculatorAppScene";
 import ChessReplayScene from "../components/ChessReplayScene";
+import HallOfFameScene from "../components/HallOfFameScene";
 import HotelCheckinScene from "../components/HotelCheckinScene";
 import Page from "../components/Page";
 import PortfolioMarqueeScene from "../components/PortfolioMarqueeScene";
@@ -8,6 +9,7 @@ import ValAnalystScene from "../components/ValAnalystScene";
 import { contactInfo, projects } from "../data/portfolio";
 
 const PROJECT_ART = {
+  "Hall of Fame": { Scene: HallOfFameScene, caption: "PERSONAL MEDIA ARCHIVE", detail: "SERIES / FILM / GAME / MUSIC" },
   "Hotel Self Check-in": { Scene: HotelCheckinScene, caption: "BILINGUAL HOTEL KIOSK", detail: "CHECK-IN / CHECK-OUT" },
   "Watt Wise": { Scene: CalculatorAppScene, caption: "BILL ESTIMATE / THB", detail: "KEYPAD / MOCKUP" },
   "Simple Chess": { Scene: ChessReplayScene, caption: "JAVA + REACT", detail: "DESKTOP / WEB" },

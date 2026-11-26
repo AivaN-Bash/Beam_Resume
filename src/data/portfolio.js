@@ -8,6 +8,16 @@ export const nav = [
 
 export const projects = [
   {
+    title: "Hall of Fame",
+    tag: "LIVE FULL-STACK APP",
+    desc: "A personal full-stack media archive for series, films, anime, games, and music, with a written “why I love it” for every entry and in-site administration. Built with React and TypeScript on Vite, with a Spring Boot and PostgreSQL backend.",
+    stack: ["React + TypeScript", "Spring Boot + Java 21", "PostgreSQL", "JWT admin editing"],
+    demoUrl: "https://web-two-theta-28.vercel.app",
+    demoAction: "View live website",
+    url: "https://github.com/AivaN-Bash/Hall_of_Frame",
+    action: "View source on GitHub",
+  },
+  {
     title: "Hotel Self Check-in",
     tag: "LIVE WEB APP",
     desc: "A bilingual, touch-friendly hotel kiosk for guests to check in, receive a room assignment and demo QR key, or check out an active stay. The React frontend connects to a Spring Boot API and PostgreSQL database; identity checks, deposits, and QR keys are simulations.",
