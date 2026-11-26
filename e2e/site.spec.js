@@ -47,16 +47,25 @@ for (const [route, metadata] of routes) {
   });
 }
 
-test("hotel self check-in appears first with demo and source links", async ({ page }) => {
+test("Hall of Fame appears first and Hotel Self Check-in remains featured", async ({ page }) => {
   await page.goto(routeUrl("/projects"), { waitUntil: "domcontentloaded" });
 
   const firstProject = page.locator(".timeline-item").first();
-  await expect(firstProject.locator("h2")).toHaveText("Hotel Self Check-in");
-  await expect(firstProject.getByRole("link", { name: /Try the hotel kiosk/ }))
-    .toHaveAttribute("href", "https://frontend-nine-kohl-nzqk24mi4s.vercel.app/");
+  await expect(firstProject.locator("h2")).toHaveText("Hall of Fame");
+  await expect(firstProject.getByRole("link", { name: /View live website/ }))
+    .toHaveAttribute("href", "https://web-two-theta-28.vercel.app");
   await expect(firstProject.getByRole("link", { name: /View source on GitHub/ }))
+    .toHaveAttribute("href", "https://github.com/AivaN-Bash/Hall_of_Frame");
+  await expect(firstProject.locator(".hall-of-fame-canvas"))
+    .toBeVisible();
+
+  const hotelProject = page.locator(".timeline-item").nth(1);
+  await expect(hotelProject.locator("h2")).toHaveText("Hotel Self Check-in");
+  await expect(hotelProject.getByRole("link", { name: /Try the hotel kiosk/ }))
+    .toHaveAttribute("href", "https://frontend-nine-kohl-nzqk24mi4s.vercel.app/");
+  await expect(hotelProject.getByRole("link", { name: /View source on GitHub/ }))
     .toHaveAttribute("href", "https://github.com/AivaN-Bash/Hotel_Checkin");
-  await expect(firstProject.locator(".hotel-checkin-canvas"))
+  await expect(hotelProject.locator(".hotel-checkin-canvas"))
     .toBeVisible();
 });
 
