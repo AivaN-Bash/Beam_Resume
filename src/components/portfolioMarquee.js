@@ -1,3 +1,5 @@
+import AsciiGrid from "./AsciiGrid";
+
 const WIDTH = 84;
 const HEIGHT = 17;
 
@@ -16,59 +18,10 @@ const FONT = {
   ".": "     |     |     |     |  #  ", " ": "     |     |     |     |     ",
 };
 const GLYPHS = Object.fromEntries(Object.entries(FONT).map(([character, rows]) => [character, rows.split("|")]));
-const MESSAGE = "PHWAT TANAJIRANON  ·  BUILT WITH REACT + VITE  ·  ";
+const MESSAGE = "PHAWAT TANAJIRANON  ·  BUILT WITH REACT + VITE  ·  ";
 const MESSAGE_GLYPHS = [...MESSAGE].map((character) => GLYPHS[character] || GLYPHS[" "]);
-const TOPLINE = "PHWAT TANAJIRANON / PORTFOLIO";
+const TOPLINE = "PHAWAT TANAJIRANON / PORTFOLIO";
 const FOOTLINE = "REACT + VITE / PERSONAL PORTFOLIO";
-
-class MarqueeGrid {
-  constructor() {
-    this.characters = new Array(WIDTH * HEIGHT);
-    this.colors = new Array(WIDTH * HEIGHT);
-    this.clear();
-  }
-
-  clear() {
-    this.characters.fill(" ");
-    this.colors.fill("0");
-  }
-
-  set(x, y, character, color = "0") {
-    const column = Math.round(x);
-    const row = Math.round(y);
-    if (column < 0 || column >= WIDTH || row < 0 || row >= HEIGHT) return;
-    const index = row * WIDTH + column;
-    this.characters[index] = character;
-    this.colors[index] = String(color);
-  }
-
-  text(x, y, value, color = "0") {
-    [...String(value)].forEach((character, offset) => this.set(x + offset, y, character, color));
-  }
-
-  horizontal(x1, x2, y, character, color) {
-    for (let x = x1; x <= x2; x += 1) this.set(x, y, character, color);
-  }
-
-  vertical(x, y1, y2, character, color) {
-    for (let y = y1; y <= y2; y += 1) this.set(x, y, character, color);
-  }
-
-  box(x, y, width, height, color) {
-    this.horizontal(x + 1, x + width - 2, y, "-", color);
-    this.horizontal(x + 1, x + width - 2, y + height - 1, "-", color);
-    this.vertical(x, y + 1, y + height - 2, "|", color);
-    this.vertical(x + width - 1, y + 1, y + height - 2, "|", color);
-    this.set(x, y, "+", color);
-    this.set(x + width - 1, y, "+", color);
-    this.set(x, y + height - 1, "+", color);
-    this.set(x + width - 1, y + height - 1, "+", color);
-  }
-
-  frame() {
-    return this.characters.map((character, index) => [character, this.colors[index]]);
-  }
-}
 
 function createBulbPath() {
   const bulbs = [];
@@ -93,7 +46,7 @@ function drawMessage(grid, offset) {
 
 /** Animate a restrained copper marquee for the portfolio project card. */
 export default function createPortfolioMarquee() {
-  const grid = new MarqueeGrid();
+  const grid = new AsciiGrid(WIDTH, HEIGHT, "0");
   const bulbs = createBulbPath();
 
   return (time) => {
@@ -107,8 +60,8 @@ export default function createPortfolioMarquee() {
     grid.box(2, 1, WIDTH - 4, HEIGHT - 2, "3");
     grid.text(Math.floor((WIDTH - TOPLINE.length) / 2), 3, TOPLINE, "0");
     grid.text(Math.floor((WIDTH - FOOTLINE.length) / 2), HEIGHT - 3, FOOTLINE, "1");
-    grid.horizontal(4, WIDTH - 5, 4, "-", "3");
-    grid.horizontal(4, WIDTH - 5, HEIGHT - 4, "-", "3");
+    grid.hline(4, WIDTH - 5, 4, "-", "3");
+    grid.hline(4, WIDTH - 5, HEIGHT - 4, "-", "3");
 
     drawMessage(grid, Math.floor(time * 8) % (MESSAGE_GLYPHS.length * 6));
     return grid.frame();

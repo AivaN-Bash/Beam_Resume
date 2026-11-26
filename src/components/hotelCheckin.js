@@ -1,3 +1,5 @@
+import AsciiGrid from "./AsciiGrid";
+
 const WIDTH = 76;
 const HEIGHT = 30;
 const STEP_DURATION = 1.1;
@@ -10,55 +12,9 @@ const JOURNEY = [
   "COMPLETE",
 ];
 
-class HotelGrid {
-  constructor() {
-    this.characters = new Array(WIDTH * HEIGHT).fill(" ");
-    this.colors = new Array(WIDTH * HEIGHT).fill("0");
-  }
-
-  clear() {
-    this.characters.fill(" ");
-    this.colors.fill("0");
-  }
-
-  set(x, y, character, color = "0") {
-    if (x < 0 || x >= WIDTH || y < 0 || y >= HEIGHT) return;
-    const index = y * WIDTH + x;
-    this.characters[index] = [...character][0] || " ";
-    this.colors[index] = String(color);
-  }
-
-  text(x, y, value, color = "0") {
-    [...String(value)].forEach((character, offset) => this.set(x + offset, y, character, color));
-  }
-
-  hline(x, end, y, character = "-", color = "7") {
-    for (let column = x; column <= end; column += 1) this.set(column, y, character, color);
-  }
-
-  box(x, y, width, height, color = "7") {
-    for (let column = x + 1; column < x + width - 1; column += 1) {
-      this.set(column, y, "-", color);
-      this.set(column, y + height - 1, "-", color);
-    }
-    for (let row = y + 1; row < y + height - 1; row += 1) {
-      this.set(x, row, "|", color);
-      this.set(x + width - 1, row, "|", color);
-    }
-    this.set(x, y, "+", color);
-    this.set(x + width - 1, y, "+", color);
-    this.set(x, y + height - 1, "+", color);
-    this.set(x + width - 1, y + height - 1, "+", color);
-  }
-
-  frame() {
-    return this.characters.map((character, index) => [character, this.colors[index]]);
-  }
-}
-
 /** Animate the hotel kiosk's check-in journey as a compact ASCII interface. */
 export default function createHotelCheckin() {
-  const grid = new HotelGrid();
+  const grid = new AsciiGrid(WIDTH, HEIGHT, "0");
   const duration = JOURNEY.length * STEP_DURATION;
 
   function draw(time) {

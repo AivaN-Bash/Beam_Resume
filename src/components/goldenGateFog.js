@@ -1,20 +1,9 @@
-import { clamp, fbm, noise2 } from "./viaductNoise";
+import AsciiGrid from "./AsciiGrid";
+import { clamp, fbm, gradient, noise2 } from "./viaductNoise";
 
 const WIDTH = 100;
 const HEIGHT = 36;
 const palette = [];
-
-const mixHex = (first, second, amount) => {
-  const a = first.match(/[a-f\d]{2}/gi).map((value) => parseInt(value, 16));
-  const b = second.match(/[a-f\d]{2}/gi).map((value) => parseInt(value, 16));
-  return "#" + a.map((value, index) => Math.round(value + (b[index] - value) * amount).toString(16).padStart(2, "0")).join("");
-};
-
-const gradient = (colors, steps) => Array.from({ length: steps }, (_, index) => {
-  const position = index / Math.max(1, steps - 1) * (colors.length - 1);
-  const start = Math.floor(position);
-  return mixHex(colors[start], colors[Math.min(start + 1, colors.length - 1)], position - start);
-});
 
 const group = (colors) => {
   const offset = palette.length;
@@ -67,7 +56,7 @@ const HORIZON = 23;
 
 /** Creates a palette-toned bridge scene with drifting fog. */
 export default function createGoldenGateFog() {
-  const grid = new SceneGrid(WIDTH, HEIGHT);
+  const grid = new AsciiGrid(WIDTH, HEIGHT, 0);
   const cable = Float32Array.from({ length: WIDTH }, (_, x) => {
     if (x < TOWER_LEFT) {
       const u = x / TOWER_LEFT;

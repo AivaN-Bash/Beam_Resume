@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
-import { pageMetadata } from "../src/data/portfolio.js";
+import { contactInfo, pageMetadata } from "../src/data/portfolio.js";
 
 const routes = Object.entries(pageMetadata);
 const publicBaseUrl = "https://aivan-bash.github.io/Beam_Resume/";
@@ -31,6 +31,7 @@ for (const [route, metadata] of routes) {
         : new URL(route.slice(1), publicBaseUrl).href;
       expect(staticHtml).toContain(`<title>${metadata.title}</title>`);
       expect(staticHtml).toContain(`<link rel="canonical" href="${canonicalUrl}" />`);
+      expect(staticHtml).toContain('href="/Beam_Resume/pt-mark.svg"');
       await expect(page.locator("main h1")).toBeVisible();
       await expect(page).toHaveTitle(metadata.title);
       await expect(page.locator('meta[name="description"]')).toHaveAttribute("content", metadata.description);
@@ -132,4 +133,45 @@ test("primary pages meet the automated WCAG 2.1 A and AA checks", async ({ page 
       .analyze();
     expect(results.violations, `${route} accessibility violations`).toEqual([]);
   }
+});
+
+test("initial keyboard tab starts at skip link and route navigation focuses main", async ({ page }) => {
+  await page.goto("", { waitUntil: "domcontentloaded" });
+  await page.keyboard.press("Tab");
+  await expect(page.getByRole("link", { name: "Skip to content" })).toBeFocused();
+
+  await page.getByRole("navigation", { name: "Main navigation" }).getByRole("link", { name: "About" }).click();
+  await expect(page.locator("#main-content")).toBeFocused();
+});
+
+test("contact page renders centralized contact details", async ({ page }) => {
+  await page.goto(routeUrl("/contact"), { waitUntil: "domcontentloaded" });
+  await expect(page.getByRole("link", { name: /Email me/ })).toHaveAttribute("href", `mailto:${contactInfo.email}`);
+  await expect(page.getByRole("link", { name: new RegExp(contactInfo.phoneDisplay) })).toHaveAttribute("href", contactInfo.phoneHref);
+  await expect(page.getByText(contactInfo.location)).toBeVisible();
+});
+
+test("home closing section keeps mobile horizontal padding and stays within viewport", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("", { waitUntil: "domcontentloaded" });
+
+  const metrics = await page.locator(".closing").evaluate((section) => {
+    const style = getComputedStyle(section);
+    const heading = section.querySelector("h2")?.getBoundingClientRect();
+    const button = section.querySelector(".button")?.getBoundingClientRect();
+    return {
+      paddingLeft: Number.parseFloat(style.paddingLeft),
+      paddingRight: Number.parseFloat(style.paddingRight),
+      headingLeft: heading?.left ?? 0,
+      headingRight: heading?.right ?? 0,
+      buttonLeft: button?.left ?? 0,
+      viewportWidth: document.documentElement.clientWidth,
+    };
+  });
+
+  expect(metrics.paddingLeft).toBeGreaterThanOrEqual(16);
+  expect(metrics.paddingRight).toBeGreaterThanOrEqual(16);
+  expect(metrics.headingLeft).toBeGreaterThanOrEqual(metrics.paddingLeft - 1);
+  expect(metrics.headingRight).toBeLessThanOrEqual(metrics.viewportWidth - metrics.paddingRight + 1);
+  expect(metrics.buttonLeft).toBeGreaterThanOrEqual(metrics.paddingLeft - 1);
 });

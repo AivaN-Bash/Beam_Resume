@@ -1,11 +1,14 @@
 import BilingualTitle from "./BilingualTitle";
 
+/** Shared inner-page shell with numbered eyebrow and English/Thai heading switch. */
 export default function Page({ title, thaiTitle, index, children }) {
-  return <div className={`page inner-page page-${index}`}>
-    <section className="page-heading">
-      <div className="eyebrow">{index} / PHAWAT TANAJIRANON</div>
-      <BilingualTitle english={title} thai={thaiTitle} />
-    </section>
-    {children}
-  </div>;
+  return (
+    <div className={`page inner-page page-${index}`}>
+      <section className="page-heading">
+        <div className="eyebrow">{index} / PHAWAT TANAJIRANON</div>
+        <BilingualTitle english={title} thai={thaiTitle} />
+      </section>
+      {children}
+    </div>
+  );
 }

@@ -9,8 +9,14 @@ export default function SiteLayout({ children }) {
   const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
   const menuButtonRef = useRef(null);
+  const headerRef = useRef(null);
+  const hasNavigatedRef = useRef(false);
 
   useEffect(() => {
+    if (!hasNavigatedRef.current) {
+      hasNavigatedRef.current = true;
+      return;
+    }
     window.scrollTo(0, 0);
     setMenuOpen(false);
     document.getElementById("main-content")?.focus({ preventScroll: true });
@@ -43,15 +49,24 @@ export default function SiteLayout({ children }) {
         menuButtonRef.current?.focus();
       }
     }
+    function handlePointerDown(event) {
+      if (headerRef.current && !headerRef.current.contains(event.target)) {
+        setMenuOpen(false);
+      }
+    }
     window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
+    window.addEventListener("pointerdown", handlePointerDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("pointerdown", handlePointerDown);
+    };
   }, [menuOpen]);
 
   return (
     <div className="site-shell">
       <BackToTop />
       <a className="skip-link" href="#main-content">Skip to content</a>
-      <header className="nav">
+      <header className="nav" ref={headerRef}>
         <Link className="brand" to="/">
           <span className="brand-mark" aria-hidden="true">
             <img src={`${import.meta.env.BASE_URL}pt-mark.svg`} alt="" width="36" height="36" />

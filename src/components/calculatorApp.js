@@ -1,3 +1,5 @@
+import AsciiGrid from "./AsciiGrid";
+
 const WIDTH = 48;
 const HEIGHT = 31;
 const KEY_INTERVAL = 0.42;
@@ -30,49 +32,6 @@ const LARGE_GLYPHS = {
   ".": ["   ", "   ", "   ", "   ", "  #"],
   "-": ["   ", "   ", "###", "   ", "   "],
 };
-
-class CalculatorGrid {
-  constructor() {
-    this.characters = new Array(WIDTH * HEIGHT).fill(" ");
-    this.colors = new Array(WIDTH * HEIGHT).fill("0");
-  }
-
-  set(x, y, character, color = "0") {
-    if (x < 0 || x >= WIDTH || y < 0 || y >= HEIGHT) return;
-    const index = y * WIDTH + x;
-    this.characters[index] = [...character][0] || " ";
-    this.colors[index] = String(color);
-  }
-
-  text(x, y, value, color = "0") {
-    [...String(value)].forEach((character, offset) => this.set(x + offset, y, character, color));
-  }
-
-  fill(x, y, width, height, character, color) {
-    for (let row = y; row < y + height; row += 1) {
-      for (let column = x; column < x + width; column += 1) this.set(column, row, character, color);
-    }
-  }
-
-  box(x, y, width, height, color) {
-    for (let column = x + 1; column < x + width - 1; column += 1) {
-      this.set(column, y, "-", color);
-      this.set(column, y + height - 1, "-", color);
-    }
-    for (let row = y + 1; row < y + height - 1; row += 1) {
-      this.set(x, row, "|", color);
-      this.set(x + width - 1, row, "|", color);
-    }
-    this.set(x, y, "+", color);
-    this.set(x + width - 1, y, "+", color);
-    this.set(x, y + height - 1, "+", color);
-    this.set(x + width - 1, y + height - 1, "+", color);
-  }
-
-  frame() {
-    return this.characters.map((character, index) => [character, this.colors[index]]);
-  }
-}
 
 function evaluate(keys) {
   let accumulator = null;
@@ -142,7 +101,7 @@ function drawLargeText(grid, x, y, value, color, clipTop, clipBottom) {
 
 /** Animate calculator input and a monthly bill estimate in a compact ASCII grid. */
 export default function createCalculatorApp() {
-  const grid = new CalculatorGrid();
+  const grid = new AsciiGrid(WIDTH, HEIGHT, "0");
   const segments = SEQUENCES.map((sequence) => sequence.length * KEY_INTERVAL + 2.1);
   const period = segments.reduce((total, segment) => total + segment, 0);
 
@@ -160,8 +119,7 @@ export default function createCalculatorApp() {
     const lastKeyTime = (entered - 1) * KEY_INTERVAL;
     const pressed = remaining - lastKeyTime < 0.18 ? sequence[entered - 1] : null;
     const result = evaluate(sequence.slice(0, entered));
-    grid.characters.fill(" ");
-    grid.colors.fill("0");
+    grid.clear();
 
     grid.box(0, 0, WIDTH, HEIGHT, "5");
     grid.text(3, 0, "WATT WISE / BILL CALCULATOR", "2");

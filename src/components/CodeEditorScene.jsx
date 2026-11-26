@@ -1,6 +1,5 @@
-import { useEffect, useRef } from "react";
-import { setupCanvasSurface } from "./canvasSurface";
-import { startCanvasLoop } from "./canvasLoop";
+import AsciiGrid from "./AsciiGrid";
+import AsciiScene from "./AsciiScene";
 
 const WIDTH = 86;
 const HEIGHT = 30;
@@ -76,57 +75,8 @@ function colorLine(line) {
   return colors;
 }
 
-class EditorGrid {
-  constructor(width, height) {
-    this.width = width;
-    this.height = height;
-    this.clear();
-  }
-
-  clear() {
-    this.characters = new Array(this.width * this.height).fill(" ");
-    this.colors = new Array(this.width * this.height).fill("0");
-  }
-
-  set(x, y, character, color = "0") {
-    const column = Math.round(x);
-    const row = Math.round(y);
-    if (column < 0 || column >= this.width || row < 0 || row >= this.height) return;
-    const index = row * this.width + column;
-    this.characters[index] = [...character][0] || " ";
-    this.colors[index] = String(color);
-  }
-
-  text(x, y, value, color = "0") {
-    [...String(value)].forEach((character, offset) => this.set(x + offset, y, character, color));
-  }
-
-  hline(x0, x1, y, character, color) {
-    for (let x = Math.ceil(x0); x <= Math.floor(x1); x += 1) this.set(x, y, character, color);
-  }
-
-  vline(x, y0, y1, character, color) {
-    for (let y = Math.ceil(y0); y <= Math.floor(y1); y += 1) this.set(x, y, character, color);
-  }
-
-  box(x, y, width, height, color) {
-    this.hline(x + 1, x + width - 2, y, "─", color);
-    this.hline(x + 1, x + width - 2, y + height - 1, "─", color);
-    this.vline(x, y + 1, y + height - 2, "│", color);
-    this.vline(x + width - 1, y + 1, y + height - 2, "│", color);
-    this.set(x, y, "╭", color);
-    this.set(x + width - 1, y, "╮", color);
-    this.set(x, y + height - 1, "╰", color);
-    this.set(x + width - 1, y + height - 1, "╯", color);
-  }
-
-  frame() {
-    return this.characters.map((character, index) => [character, this.colors[index]]);
-  }
-}
-
 function createEditorFrame() {
-  const grid = new EditorGrid(WIDTH, HEIGHT);
+  const grid = new AsciiGrid(WIDTH, HEIGHT, "0");
   const lines = SOURCE.split("\n");
   const syntax = lines.map(colorLine);
   const keys = [];
@@ -160,7 +110,7 @@ function createEditorFrame() {
       if (previous[1] < 0) currentColumn = lines[currentLine] ? lines[currentLine].length - lines[currentLine].trimStart().length : 0;
     }
 
-    grid.box(0, 0, WIDTH, HEIGHT, "7");
+    grid.box(0, 0, WIDTH, HEIGHT, "7", "rounded");
     grid.text(2, 0, "●", "5");
     grid.text(4, 0, "●", "4");
     grid.text(6, 0, "●", "2");
@@ -202,45 +152,27 @@ function createEditorFrame() {
   return draw;
 }
 
+const createColorFor = ({ paper, slate, caramel, sand }) => {
+  const muted = `color-mix(in srgb, ${sand} 62%, ${paper})`;
+  const dim = `color-mix(in srgb, ${caramel} 52%, ${paper})`;
+  const line = `color-mix(in srgb, ${sand} 24%, ${paper})`;
+  const palette = [slate, muted, caramel, sand, slate, caramel, sand, dim, line, sand, paper];
+  return (key) => palette[Number(key)] || slate;
+};
+
 /** The editor pauses offscreen and uses a readable still when motion is disabled. */
 export default function CodeEditorScene() {
-  const canvasRef = useRef(null);
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return undefined;
-    const context = canvas.getContext("2d");
-    if (!context) return undefined;
-
-    const clearCanvas = setupCanvasSurface(canvas, context, WIDTH * CELL_WIDTH, HEIGHT * CELL_HEIGHT);
-    const styles = getComputedStyle(canvas);
-    const slate = styles.getPropertyValue("--slate").trim() || "#d9e2e7";
-    const sand = styles.getPropertyValue("--sand").trim() || "#dbd7c8";
-    const caramel = styles.getPropertyValue("--caramel").trim() || "#b6815b";
-    const paper = styles.getPropertyValue("--paper").trim() || "#01040e";
-    const muted = "color-mix(in srgb, " + sand + " 62%, " + paper + ")";
-    const dim = "color-mix(in srgb, " + caramel + " 52%, " + paper + ")";
-    const line = "color-mix(in srgb, " + sand + " 24%, " + paper + ")";
-    const palette = [slate, muted, caramel, sand, slate, caramel, sand, dim, line, sand, paper];
-    context.font = '17px "DM Mono", monospace';
-    context.textAlign = "center";
-    context.textBaseline = "middle";
-    return startCanvasLoop(canvas, () => {
-      const drawFrame = createEditorFrame();
-      function draw(time) {
-        const frame = drawFrame(time);
-        clearCanvas();
-        frame.forEach(([character, colorKey], index) => {
-          if (character === " ") return;
-          const x = index % WIDTH;
-          const y = Math.floor(index / WIDTH);
-          context.fillStyle = palette[Number(colorKey)] || slate;
-          context.fillText(character, x * CELL_WIDTH + CELL_WIDTH / 2, y * CELL_HEIGHT + CELL_HEIGHT / 2);
-        });
-      }
-      return { draw, staticTime: drawFrame.staticTime, duration: drawFrame.duration };
-    }, { frameInterval: FRAME_INTERVAL });
-  }, []);
-
-  return <canvas ref={canvasRef} className="code-editor-canvas" aria-hidden="true" />;
+  return (
+    <AsciiScene
+      className="code-editor-canvas"
+      columns={WIDTH}
+      rows={HEIGHT}
+      cellWidth={CELL_WIDTH}
+      cellHeight={CELL_HEIGHT}
+      frameInterval={FRAME_INTERVAL}
+      font='17px "DM Mono", monospace'
+      createScene={createEditorFrame}
+      createColorFor={createColorFor}
+    />
+  );
 }

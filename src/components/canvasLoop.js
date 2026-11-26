@@ -20,6 +20,7 @@ export function startCanvasLoop(canvas, createRenderer, {
   let visible = !canObserve;
   let pagePaused = false;
   let mounted = true;
+  let lastRenderedTime = 0;
 
   function staticTime() {
     if (typeof renderer?.staticTime === "function") return renderer.staticTime();
@@ -29,6 +30,7 @@ export function startCanvasLoop(canvas, createRenderer, {
   }
 
   function draw(time) {
+    lastRenderedTime = time;
     renderer?.draw(time);
   }
 
@@ -92,6 +94,15 @@ export function startCanvasLoop(canvas, createRenderer, {
   if (visible) {
     initialize();
     start();
+  }
+
+  // Re-paint once web fonts (e.g. DM Mono) finish loading so static/reduced-motion scenes don't stay on fallback metrics.
+  if (document.fonts && document.fonts.status !== "loaded") {
+    document.fonts.ready.then(() => {
+      if (!mounted || !visible || !renderer) return;
+      renderer.invalidate?.();
+      draw(reducedMotion.matches ? staticTime() : lastRenderedTime);
+    });
   }
 
   function handleMotionChange() {

@@ -120,7 +120,7 @@ export default function Home() {
         <div className="section-label">03 / INDEX</div>
         <div className="index-list">
           <Link to="/experience" className="index-link"><span>01</span><strong>Experience</strong><small>Dollywood, hospitality, and university</small><Arrow/></Link>
-          <Link to="/projects" className="index-link"><span>02</span><strong>Projects</strong><small>Chess, streaming tools, and this site</small><Arrow/></Link>
+          <Link to="/projects" className="index-link"><span>02</span><strong>Projects</strong><small>Hotel kiosk, bill estimator, chess, and this site</small><Arrow/></Link>
           <Link to="/skills" className="index-link"><span>03</span><strong>Skills</strong><small>Software, office tools, and languages</small><Arrow/></Link>
           <Link to="/contact" className="index-link"><span>04</span><strong>Contact</strong><small>Customer service, support, or junior tech</small><Arrow/></Link>
         </div>

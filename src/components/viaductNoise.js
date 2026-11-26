@@ -3,6 +3,20 @@ export const KEYS = Array.from({ length: 64 }, (_, index) => String.fromCharCode
 export const clamp = (value, minimum = 0, maximum = 1) => Math.max(minimum, Math.min(maximum, value));
 export const lerp = (from, to, amount) => from + (to - from) * amount;
 
+export function mixHex(first, second, amount) {
+  const a = first.match(/[a-f\d]{2}/gi).map((value) => parseInt(value, 16));
+  const b = second.match(/[a-f\d]{2}/gi).map((value) => parseInt(value, 16));
+  return "#" + a.map((value, index) => Math.round(value + (b[index] - value) * amount).toString(16).padStart(2, "0")).join("");
+}
+
+export function gradient(colors, steps) {
+  return Array.from({ length: steps }, (_, index) => {
+    const position = (index / Math.max(1, steps - 1)) * (colors.length - 1);
+    const start = Math.floor(position);
+    return mixHex(colors[start], colors[Math.min(start + 1, colors.length - 1)], position - start);
+  });
+}
+
 export function rng(seed = 0) {
   let state = seed >>> 0;
   return () => {

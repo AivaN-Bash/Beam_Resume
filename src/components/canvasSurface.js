@@ -7,6 +7,17 @@ export function setupCanvasSurface(canvas, context, width, height) {
   return () => context.clearRect(0, 0, width, height);
 }
 
+/** Read the portfolio CSS palette tokens from an element with safe defaults. */
+export function getThemeColors(element) {
+  const styles = getComputedStyle(element);
+  return {
+    paper: styles.getPropertyValue("--paper").trim() || "#01040e",
+    slate: styles.getPropertyValue("--slate").trim() || "#d9e2e7",
+    caramel: styles.getPropertyValue("--caramel").trim() || "#b6815b",
+    sand: styles.getPropertyValue("--sand").trim() || "#dbd7c8",
+  };
+}
+
 /** Paint only the glyph cells that changed since the previous frame. */
 export function createAsciiFramePainter(context, {
   columns,
@@ -17,11 +28,11 @@ export function createAsciiFramePainter(context, {
   characterFor = (character) => character,
   textAlign = "center",
   textBaseline = "middle",
+  chunkRows = 16,
 }) {
   const length = columns * rows;
   const previousCharacters = new Array(length).fill(" ");
   const previousColors = new Array(length).fill(" ");
-  let hasPainted = false;
   let currentFillStyle = "";
   let pendingFrame = null;
   let activeFrame = null;
@@ -48,7 +59,7 @@ export function createAsciiFramePainter(context, {
 
         const left = x * cellWidth;
         const top = y * cellHeight;
-        if (hasPainted) context.clearRect(left, top, cellWidth, cellHeight);
+        if (previousCharacters[index] !== " ") context.clearRect(left, top, cellWidth, cellHeight);
         if (character !== " ") {
           const fillStyle = colorFor(color);
           if (fillStyle !== currentFillStyle) {
@@ -64,8 +75,6 @@ export function createAsciiFramePainter(context, {
         previousColors[index] = color;
       }
     }
-
-    hasPainted = true;
   }
 
   function startPaint(frame) {
@@ -73,7 +82,7 @@ export function createAsciiFramePainter(context, {
     isPainting = true;
     let nextRow = 0;
     const paintChunk = () => {
-      const endRow = Math.min(rows, nextRow + 4);
+      const endRow = Math.min(rows, nextRow + chunkRows);
       paintRows(activeFrame, nextRow, endRow);
       nextRow = endRow;
 
@@ -93,6 +102,14 @@ export function createAsciiFramePainter(context, {
     pendingFrame = normalizeFrame(frame);
     if (!isPainting) startPaint(pendingFrame);
   }
+
+  paint.invalidate = () => {
+    window.clearTimeout(chunkTimer);
+    isPainting = false;
+    context.clearRect(0, 0, columns * cellWidth, rows * cellHeight);
+    previousCharacters.fill(" ");
+    previousColors.fill(" ");
+  };
 
   paint.dispose = () => {
     window.clearTimeout(chunkTimer);

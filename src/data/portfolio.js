@@ -58,6 +58,15 @@ export const skillGroups = [
   ["Communication", ["English · TOEIC 810", "Thai · Native", "Cross-cultural teamwork", "Clear communication"]],
 ];
 
+export const contactInfo = {
+  email: "beamstary@gmail.com",
+  phoneHref: "tel:+66864736645",
+  phoneDisplay: "086 473 6645",
+  location: "Bang Bo, Samut Prakan, Thailand",
+  openTo: "Customer service, hospitality, support, or junior tech roles",
+  githubUrl: "https://github.com/AivaN-Bash",
+};
+
 export const pageMetadata = {
   "/": {
     title: "Phawat Tanajiranon — Portfolio",

@@ -1,6 +1,5 @@
-import { useEffect, useRef } from "react";
-import { setupCanvasSurface } from "./canvasSurface";
-import { startCanvasLoop } from "./canvasLoop";
+import AsciiGrid from "./AsciiGrid";
+import AsciiScene from "./AsciiScene";
 
 const WIDTH = 96;
 const HEIGHT = 28;
@@ -31,78 +30,8 @@ const HOP_DURATION = 1.1;
 const LOOP_DURATION = 0.6 + HOPS.length * HOP_DURATION + 3.2;
 const RESPONSE_MS = [1, 18, 18, 22, 22, 31, 31, 1];
 
-class DnsGrid {
-  constructor(width, height) {
-    this.width = width;
-    this.height = height;
-    this.characters = new Array(width * height);
-    this.colors = new Array(width * height);
-    this.clear();
-  }
-
-  clear() {
-    this.characters.fill(" ");
-    this.colors.fill("0");
-  }
-
-  set(x, y, character, color) {
-    const column = Math.round(x);
-    const row = Math.round(y);
-    if (column < 0 || row < 0 || column >= this.width || row >= this.height) return;
-    const index = column + row * this.width;
-    this.characters[index] = [...character][0] || " ";
-    this.colors[index] = String(color);
-  }
-
-  text(x, y, value, color) {
-    [...String(value)].forEach((character, offset) => this.set(x + offset, y, character, color));
-  }
-
-  hline(x0, x1, y, character, color) {
-    for (let x = Math.ceil(x0); x <= Math.floor(x1); x += 1) this.set(x, y, character, color);
-  }
-
-  vline(x, y0, y1, character, color) {
-    for (let y = Math.ceil(y0); y <= Math.floor(y1); y += 1) this.set(x, y, character, color);
-  }
-
-  line(x0, y0, x1, y1, character, color) {
-    let x = Math.round(x0);
-    let y = Math.round(y0);
-    const endX = Math.round(x1);
-    const endY = Math.round(y1);
-    const dx = Math.abs(endX - x);
-    const sx = x < endX ? 1 : -1;
-    const dy = -Math.abs(endY - y);
-    const sy = y < endY ? 1 : -1;
-    let error = dx + dy;
-    while (true) {
-      this.set(x, y, character, color);
-      if (x === endX && y === endY) break;
-      const doubled = 2 * error;
-      if (doubled >= dy) { error += dy; x += sx; }
-      if (doubled <= dx) { error += dx; y += sy; }
-    }
-  }
-
-  box(x, y, width, height, color) {
-    this.hline(x + 1, x + width - 2, y, "─", color);
-    this.hline(x + 1, x + width - 2, y + height - 1, "─", color);
-    this.vline(x, y + 1, y + height - 2, "│", color);
-    this.vline(x + width - 1, y + 1, y + height - 2, "│", color);
-    this.set(x, y, "╭", color);
-    this.set(x + width - 1, y, "╮", color);
-    this.set(x, y + height - 1, "╰", color);
-    this.set(x + width - 1, y + height - 1, "╯", color);
-  }
-
-  frame() {
-    return this.characters.map((character, index) => [character, this.colors[index]]);
-  }
-}
-
 function createDnsFrame() {
-  const grid = new DnsGrid(WIDTH, HEIGHT);
+  const grid = new AsciiGrid(WIDTH, HEIGHT, "0");
   const center = (index) => [NODES[index][2] + BOX_WIDTH / 2, NODES[index][3] + BOX_HEIGHT / 2];
   const edge = (from, to) => {
     const [startX, startY] = center(from);
@@ -133,7 +62,7 @@ function createDnsFrame() {
       const isActive = currentHop && (currentHop[0] === index || currentHop[1] === index);
       const isResolved = hopIndex >= HOPS.length && (index === 0 || index === 1);
       const borderColor = isActive ? (currentHop[3] ? "2" : "9") : isResolved ? "2" : "7";
-      grid.box(x, y, BOX_WIDTH, BOX_HEIGHT, borderColor);
+      grid.box(x, y, BOX_WIDTH, BOX_HEIGHT, borderColor, "rounded");
       grid.text(x + 2, y + 1, name, isActive ? "0" : "3");
       grid.text(x + 2, y + 2, subtitle, "1");
     });
@@ -179,44 +108,24 @@ function createDnsFrame() {
   return draw;
 }
 
+const createColorFor = ({ slate, caramel, sand }) => {
+  const palette = [slate, "#aaa79e", caramel, sand, slate, caramel, sand, "#6e6864", "#39363a", "#d1a17e", "#8a6c58"];
+  return (key) => palette[parseInt(key, 16)] || slate;
+};
+
 /** A compact query-flow diagram that stops when hidden or reduced motion is set. */
 export default function DnsResolverScene() {
-  const canvasRef = useRef(null);
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return undefined;
-    const context = canvas.getContext("2d");
-    if (!context) return undefined;
-
-    const clearCanvas = setupCanvasSurface(canvas, context, WIDTH * CELL_WIDTH, HEIGHT * CELL_HEIGHT);
-    const styles = getComputedStyle(canvas);
-    const slate = styles.getPropertyValue("--slate").trim() || "#d9e2e7";
-    const sand = styles.getPropertyValue("--sand").trim() || "#dbd7c8";
-    const caramel = styles.getPropertyValue("--caramel").trim() || "#b6815b";
-    const palette = [slate, "#aaa79e", caramel, sand, slate, caramel, sand, "#6e6864", "#39363a", "#d1a17e", "#8a6c58"];
-    context.font = '12px "DM Mono", monospace';
-    context.textAlign = "center";
-    context.textBaseline = "middle";
-    return startCanvasLoop(canvas, () => {
-      const drawFrame = createDnsFrame();
-      return {
-        staticTime: drawFrame.staticTime,
-        duration: drawFrame.duration,
-        draw(time) {
-          const frame = drawFrame(time);
-          clearCanvas();
-          frame.forEach(([character, colorKey], index) => {
-            if (character === " ") return;
-            const x = index % WIDTH;
-            const y = Math.floor(index / WIDTH);
-            context.fillStyle = palette[parseInt(colorKey, 16)] || slate;
-            context.fillText(character, x * CELL_WIDTH + CELL_WIDTH / 2, y * CELL_HEIGHT + CELL_HEIGHT / 2);
-          });
-        },
-      };
-    }, { frameInterval: FRAME_INTERVAL });
-  }, []);
-
-  return <canvas ref={canvasRef} className="dns-resolver-canvas" aria-hidden="true" />;
+  return (
+    <AsciiScene
+      className="dns-resolver-canvas"
+      columns={WIDTH}
+      rows={HEIGHT}
+      cellWidth={CELL_WIDTH}
+      cellHeight={CELL_HEIGHT}
+      frameInterval={FRAME_INTERVAL}
+      font='12px "DM Mono", monospace'
+      createScene={createDnsFrame}
+      createColorFor={createColorFor}
+    />
+  );
 }

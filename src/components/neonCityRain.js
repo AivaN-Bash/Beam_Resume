@@ -1,21 +1,10 @@
-import { clamp, fbm, noise2 } from "./viaductNoise";
+import AsciiGrid from "./AsciiGrid";
+import { clamp, fbm, gradient, noise2, rng } from "./viaductNoise";
 
 const WIDTH = 100;
 const HEIGHT = 36;
 const CITY_HEIGHT = 23;
 const palette = [];
-
-const mixHex = (first, second, amount) => {
-  const a = first.match(/[a-f\d]{2}/gi).map((value) => parseInt(value, 16));
-  const b = second.match(/[a-f\d]{2}/gi).map((value) => parseInt(value, 16));
-  return "#" + a.map((value, index) => Math.round(value + (b[index] - value) * amount).toString(16).padStart(2, "0")).join("");
-};
-
-const gradient = (colors, steps) => Array.from({ length: steps }, (_, index) => {
-  const position = index / Math.max(1, steps - 1) * (colors.length - 1);
-  const start = Math.floor(position);
-  return mixHex(colors[start], colors[Math.min(start + 1, colors.length - 1)], position - start);
-});
 
 const group = (colors) => {
   const offset = palette.length;
@@ -46,46 +35,10 @@ const hash = (first, second) => {
   return ((value ^ (value >>> 16)) >>> 0) / 4294967296;
 };
 
-function createRandom(seed) {
-  let state = seed >>> 0;
-  return () => {
-    state = (Math.imul(state, 1664525) + 1013904223) >>> 0;
-    return state / 4294967296;
-  };
-}
-
-class CityGrid {
-  constructor(width, height) {
-    this.width = width;
-    this.height = height;
-    this.characters = new Array(width * height);
-    this.colors = new Array(width * height);
-    this.clear();
-  }
-
-  clear() {
-    this.characters.fill(" ");
-    this.colors.fill(0);
-  }
-
-  set(x, y, character, color) {
-    const column = Math.round(x);
-    const row = Math.round(y);
-    if (column < 0 || row < 0 || column >= this.width || row >= this.height) return;
-    const index = column + row * this.width;
-    this.characters[index] = [...character][0] || " ";
-    this.colors[index] = color;
-  }
-
-  frame() {
-    return this.characters.map((character, index) => [character, this.colors[index]]);
-  }
-}
-
 /** Creates a looping rain-soaked street with palette-colored sign glow. */
 export default function createNeonCityRain() {
-  const grid = new CityGrid(WIDTH, HEIGHT);
-  const random = createRandom(23);
+  const grid = new AsciiGrid(WIDTH, HEIGHT, 0);
+  const random = rng(23);
   const kind = new Int8Array(WIDTH * CITY_HEIGHT);
   const secondary = new Int16Array(WIDTH * CITY_HEIGHT);
   const signs = [

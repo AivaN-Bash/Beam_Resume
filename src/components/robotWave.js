@@ -1,54 +1,10 @@
-const clamp = (value) => Math.max(0, Math.min(1, value));
+import AsciiGrid from "./AsciiGrid";
+import { clamp, gradient, mixHex } from "./viaductNoise";
+
 const smooth = (value) => {
   const t = clamp(value);
   return t * t * (3 - 2 * t);
 };
-
-function mixColor(a, b, amount) {
-  const from = a.match(/[a-f\d]{2}/gi).map((value) => parseInt(value, 16));
-  const to = b.match(/[a-f\d]{2}/gi).map((value) => parseInt(value, 16));
-  return "#" + from.map((value, index) => Math.round(value + (to[index] - value) * amount).toString(16).padStart(2, "0")).join("");
-}
-
-function gradient(stops, size) {
-  return Array.from({ length: size }, (_, index) => {
-    const position = (index / Math.max(1, size - 1)) * (stops.length - 1);
-    const stop = Math.floor(position);
-    return mixColor(stops[stop], stops[Math.min(stop + 1, stops.length - 1)], position - stop);
-  });
-}
-
-class Grid {
-  constructor(cols, rows) {
-    this.cols = cols;
-    this.rows = rows;
-    this.ch = new Array(cols * rows);
-    this.co = new Array(cols * rows);
-    this.clear();
-  }
-
-  clear() {
-    this.ch.fill(" ");
-    this.co.fill(0);
-  }
-
-  set(x, y, character, color) {
-    const col = Math.round(x);
-    const row = Math.round(y);
-    if (col < 0 || col >= this.cols || row < 0 || row >= this.rows) return;
-    const index = row * this.cols + col;
-    this.ch[index] = [...character][0] || " ";
-    this.co[index] = color;
-  }
-
-  text(x, y, value, color) {
-    [...value].forEach((character, index) => this.set(x + index, y, character, color));
-  }
-
-  vline(x, y0, y1, character, color) {
-    for (let y = Math.ceil(y0); y <= Math.floor(y1); y += 1) this.set(x, y, character, color);
-  }
-}
 
 const ell = (grid, cx, cy, rx, ry, draw) => {
   for (let y = Math.floor(cy - ry); y <= Math.ceil(cy + ry); y += 1) {
@@ -96,14 +52,14 @@ export function createRobotFrame(colors) {
   };
 
   const metal = add(gradient([colors.caramel, colors.sand, colors.slate], 12));
-  const dark = add([colors.ink, mixColor(colors.ink, colors.slate, 0.08), mixColor(colors.ink, colors.slate, 0.16)]);
+  const dark = add([colors.ink, mixHex(colors.ink, colors.slate, 0.08), mixHex(colors.ink, colors.slate, 0.16)]);
   const eye = add([colors.caramel, colors.sand, colors.slate, colors.slate]);
-  const red = add([colors.caramel, colors.sand, mixColor(colors.caramel, colors.ink, 0.42)]);
+  const red = add([colors.caramel, colors.sand, mixHex(colors.caramel, colors.ink, 0.42)]);
   const accent = add([colors.sand, colors.caramel, colors.slate]);
 
   const cols = 64;
   const rows = 30;
-  const grid = new Grid(cols, rows);
+  const grid = new AsciiGrid(cols, rows, 0);
   const metalShade = (u, v, edge) => [
     edge ? "▓" : "█",
     metal + Math.min(11, Math.max(0, Math.floor(clamp(0.62 - v * 0.3 - u * 0.22) * 12) - (edge ? 3 : 0))),
@@ -209,6 +165,6 @@ export function createRobotFrame(colors) {
     grid.text(23, mouthY, "▄▄", red + 1);
     grid.text(39, mouthY, "▄▄", red + 1);
 
-    return grid.ch.map((character, index) => [character, palette[grid.co[index]]]);
+    return grid.characters.map((character, index) => [character, palette[grid.colors[index]]]);
   };
 }

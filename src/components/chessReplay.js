@@ -1,3 +1,5 @@
+import AsciiGrid from "./AsciiGrid";
+
 const WIDTH = 86;
 const HEIGHT = 28;
 
@@ -23,36 +25,6 @@ const BOARD_X = 4;
 const BOARD_Y = 2;
 const SQUARE_WIDTH = 7;
 const SQUARE_HEIGHT = 3;
-
-class ChessGrid {
-  constructor() {
-    this.characters = new Array(WIDTH * HEIGHT);
-    this.colors = new Array(WIDTH * HEIGHT);
-    this.clear();
-  }
-
-  clear() {
-    this.characters.fill(" ");
-    this.colors.fill("0");
-  }
-
-  set(x, y, character, color = "0") {
-    const column = Math.round(x);
-    const row = Math.round(y);
-    if (column < 0 || column >= WIDTH || row < 0 || row >= HEIGHT) return;
-    const index = row * WIDTH + column;
-    this.characters[index] = character;
-    this.colors[index] = String(color);
-  }
-
-  text(x, y, value, color = "0") {
-    [...String(value)].forEach((character, offset) => this.set(x + offset, y, character, color));
-  }
-
-  frame() {
-    return this.characters.map((character, index) => [character, this.colors[index]]);
-  }
-}
 
 function square(position) {
   return [position.charCodeAt(0) - 97, 8 - Number(position[1])];
@@ -142,7 +114,7 @@ function drawMovePanel(grid, played, isMate) {
 
 /** Build the current board and move list for the animated Opera Game replay. */
 export default function createChessReplay() {
-  const grid = new ChessGrid();
+  const grid = new AsciiGrid(WIDTH, HEIGHT, "0");
   const boards = createBoardStates();
 
   function draw(time) {

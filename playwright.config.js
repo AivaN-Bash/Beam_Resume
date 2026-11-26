@@ -8,7 +8,7 @@ export default defineConfig({
   reporter: "list",
   use: {
     baseURL: "http://127.0.0.1:4174/Beam_Resume/",
-    trace: "retain-on-failure",
+    trace: process.env.CI ? "retain-on-failure" : "off",
     viewport: { width: 1440, height: 960 },
   },
   webServer: {

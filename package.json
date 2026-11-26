@@ -9,6 +9,7 @@
     "build": "vite build",
     "postbuild": "node scripts/copy-404.mjs",
     "preview": "vite preview",
+    "pretest:e2e": "npm run build",
     "test:e2e": "playwright test"
   },
   "dependencies": {
